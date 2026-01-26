@@ -1,0 +1,121 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# MODFLOW files
+*.hds
+*.cbc
+*.lst
+*.dis
+*.bas
+*.nwt
+*.sfr
+*.sfr.out
+*.oc
+*.rch
+*.wel
+*.ghb
+*.chd
+*.evt
+*.drn
+*.riv
+*.str
+*.uzf
+*.mnw
+*.mnw2
+*.sub
+*.swt
+*.hfb
+*.lpf
+*.bcf
+*.upw
+
+# Executables (download separately)
+executables/*.exe
+executables/mfnwt*
+executables/MODFLOW*
+
+# Results and temporary files
+results_test/
+temp/
+tmp/
+*.log
+*.bak
+
+# Data files (large)
+data/output/*.csv
+data/output/*.hdf5
+data/output/*.pkl
+
+# Credentials and secrets
+.env
+.env.local
+*.pem
+credentials.json
+secrets.yaml
+
+# Documentation build
+docs/_build/
+site/
+
+# Test coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Distribution
+MANIFEST
