@@ -131,14 +131,14 @@ results = run_simulation(
 
 Calculates dimensionless Pi numbers for river-aquifer exchange analysis:
 
-| Parameter | Symbol | Description |
-|-----------|--------|-------------|
-| `gamma_d` | γ_d | Dimensionless event duration |
-| `lambda_v` | λ_v | Vertical exchange parameter |
-| `theta_r` | θ_r | River width ratio |
-| `chi` | χ | Flow resistance parameter |
-| `rho_0` | ρ_0 | Initial head ratio |
-| `zeta` | ζ | Longitudinal slope parameter |
+| Parameter | Symbol | Pi Number | Description |
+|-----------|--------|-----------|-------------|
+| `gamma_d` | γ_d | Π₁ | Dimensionless event duration |
+| `lambda_v` | λ_v | Π₂ | Vertical exchange parameter |
+| `theta_r` | θ_r | Π₃ | River width ratio |
+| `chi` | χ | Π₄ | Flow resistance parameter |
+| `rho_0` | ρ_0 | Π₅ | Initial head ratio |
+| `zeta` | ζ | Π₆ | Longitudinal slope parameter |
 
 ### `src/geomorphic_scaling.py`
 
@@ -177,9 +177,9 @@ Where:
 
 The river-aquifer exchange is characterized by dimensionless groups:
 
-1. **γ_d = t_c / t_d**: Ratio of aquifer response time to event duration
-2. **λ_v = K_r × d_r / (t_c × K_a)**: Vertical exchange intensity
-3. **θ_r = S_y × w_bkf / B**: Effective river width ratio
+1. **Π₁ (γ_d) = t_c / t_d**: Ratio of aquifer response time to event duration
+2. **Π₂ (λ_v) = K_r × d_r / (t_c × K_a)**: Vertical exchange intensity
+3. **Π₃ (θ_r) = S_y × w_bkf / B**: Effective river width ratio
 
 ## References
 
