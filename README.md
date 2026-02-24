@@ -28,6 +28,7 @@ river-aquifer-exchange/
 │   ├── dimensionless_numbers.py        # Dimensionless Pi number calculations
 │   ├── geomorphic_scaling.py           # Geomorphic scaling relationships
 │   └── modflow_utils.py                # MODFLOW utilities and helpers
+│   └── signal_processing.py                # MODFLOW utilities and helpers
 │
 ├── simulations/                        # Simulation scripts and notebooks
 │   ├── parallel_modflow.py             # Parallel MODFLOW execution
@@ -196,10 +197,10 @@ If you use this code in your research, please cite:
 
 ```bibtex
 @software{river_aquifer_exchange,
-  author = {Your Name},
+  author = {Isabel Restrepo},
   title = {River-Aquifer Exchange Modeling Framework},
   year = {2025},
-  url = {https://github.com/yourusername/river-aquifer-exchange}
+  url = {https://github.com/IsaRpo32/RIVER-AQUIFER-EXCHANGE.git}
 }
 ```
 
@@ -210,3 +211,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Contact
 
 For questions or collaboration, please open an issue or contact the maintainer.
+
