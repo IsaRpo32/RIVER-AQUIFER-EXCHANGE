@@ -31,7 +31,7 @@ def get_w_bkf(da_km2):
     float
         Bankfull width in meters.
     """
-    w_bkf_m = 2.9 * da_km2**0.352  # Bieger et al. 2015
+    w_bkf_m = 2.7 * da_km2**0.352  # Bieger et al. 2015
     return w_bkf_m
 
 
@@ -324,3 +324,4 @@ def get_K(area_list, C_threshold=0.2, num_K=None, dx_factor=0.025, L=None):
         }
 
     return results
+
