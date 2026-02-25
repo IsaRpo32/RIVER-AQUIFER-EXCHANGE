@@ -141,24 +141,6 @@ Utilities for MODFLOW model construction:
 Parallel execution utilities for running multiple MODFLOW scenarios efficiently.
 Designed to accelerate Monte Carlo exploration and scenario testing by distributing independent MODFLOW runs across multiple workers.
 
----
-
-## Scientific Background
-
-### Cooper-Rorabaugh Hydrograph
-
-The flood hydrograph follows the Cooper and Rorabaugh (1963) analytical solution:
-
-$$h(t) = H_0 + H_p \times \exp(-\beta(t - t_p)) \times \frac{1 - \cos(\omega t)}{1 - \cos(\omega t_p)}$$
-
-Where:
-- $H_0$: Base stage
-- $H_p$: Peak stage increment
-- $t_p$: Time to peak
-- $\omega$: Angular frequency ($2\pi / t_d$)
-
----
-
 ## References
 
 - Bieger, K., et al. (2015). Development and evaluation of bankfull hydraulic geometry relationships. *Journal of Hydrology*, 530, 761–771.
@@ -196,3 +178,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Contact
 
 For questions or collaboration, please open an issue or contact the maintainer.
+
