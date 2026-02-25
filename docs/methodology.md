@@ -86,45 +86,7 @@ T_c = 0.0195 × L^0.77 × S^-0.385 × 60
 
 ## 3. Dimensionless Analysis
 
-### 3.1 Characteristic Time Scale
-
-The aquifer response time scale is defined as:
-
-```
-t_c = (S_y × B²) / (K_a × d_bkf)
-```
-
-Where:
-- `S_y`: Specific yield (-)
-- `B`: Aquifer half-width perpendicular to river (m)
-- `K_a`: Aquifer hydraulic conductivity (m/s)
-- `d_bkf`: Bankfull depth (m)
-
-### 3.2 Dimensionless Groups
-
-| Symbol | Name | Definition | Physical Meaning |
-|--------|------|------------|------------------|
-| γ_d | Gamma | t_c / t_d | Aquifer response vs. event duration |
-| λ_v | Lambda | K_r × d_r / (t_c × K_a) | Vertical exchange intensity |
-| θ_r | Theta | S_y × w_bkf / B | Effective river width ratio |
-| χ | Chi | S × d_bkf / (n × B × t_c) | Flow resistance parameter |
-| ρ_0 | Rho | H_p / H_0 | Relative flood magnitude |
-| ζ | Zeta | S × L / H_0 | Longitudinal gradient |
-
-### 3.3 Parameter Interpretation
-
-**γ_d (Gamma)**:
-- γ_d << 1: Aquifer responds quickly relative to flood duration
-- γ_d >> 1: Aquifer cannot fully respond during flood event
-
-**λ_v (Lambda)**:
-- Higher λ_v: Greater vertical exchange through streambed
-- Controls infiltration/exfiltration rates
-
-**θ_r (Theta)**:
-- Ratio of river influence zone to aquifer width
-- Affects lateral extent of bank storage
-
+To analyze the system, we purpose something pi numbers that are dimensionless number that allow understand the system. These are explained in paper.
 ## 4. Numerical Modeling
 
 ### 4.1 MODFLOW-NWT Configuration
@@ -212,3 +174,4 @@ Final samples are selected using kernel density estimation (KDE) in dimensionles
 3. Zhou, Y., et al. (2024). Regional bankfull geometry relationships. *Geomorphology*, 108897.
 
 4. Niswonger, R.G., & Prudic, D.E. (2005). Documentation of the Streamflow-Routing (SFR2) Package. *USGS Techniques and Methods*, 6-A13.
+
