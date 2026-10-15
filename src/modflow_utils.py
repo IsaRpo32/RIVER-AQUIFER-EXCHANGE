@@ -30,6 +30,9 @@ except ImportError:
 
 from flopy.utils.sfroutputfile import SfrFile
 
+# np.trapz was renamed np.trapezoid in NumPy 2.0 and removed later
+_trapezoid = getattr(np, "trapezoid", None) or np.trapz
+
 
 # =============================================================================
 # Topography Generation
@@ -607,7 +610,7 @@ def extract_sfr_data(model, reach_numbers, labels, orientation='v'):
         Dictionary with data structured by reach and variable.
     """
     # Read SFR file
-    sfr_df = SfrFile(f"{model.model_ws}\\{model.name}.sfr.out").df
+    sfr_df = SfrFile(os.path.join(model.model_ws, f"{model.name}.sfr.out")).df
 
     # Handle special case: extract all reaches if reach_numbers=[-1]
     if reach_numbers == [-1]:
@@ -698,8 +701,8 @@ def analyze_peak_integrals(t, y, eps=0.0):
     i0_neg, i1_neg = scan_bounds(i_min, -1)
 
     # 3) Integrals
-    int_pos = np.trapz(y[i0_pos:i1_pos + 1], t[i0_pos:i1_pos + 1])
-    int_neg = np.trapz(y[i0_neg:i1_neg + 1], t[i0_neg:i1_neg + 1])
+    int_pos = _trapezoid(y[i0_pos:i1_pos + 1], t[i0_pos:i1_pos + 1])
+    int_neg = _trapezoid(y[i0_neg:i1_neg + 1], t[i0_neg:i1_neg + 1])
 
     return {
         't_max': t_max, 'y_max': y_max,
@@ -979,7 +982,7 @@ def plot_sfr_results(model, river, reach_number, labels, orientation='h',
         Values dictionary if dict_values=True.
     """
     # Read DataFrame from SFR file
-    sfr_df = SfrFile(model.model_ws + f"\\{model.name}.sfr.out").df
+    sfr_df = SfrFile(os.path.join(model.model_ws, f"{model.name}.sfr.out")).df
 
     # Convert reach_number to list if received as integer
     if isinstance(reach_number, int):
