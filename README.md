@@ -143,7 +143,7 @@ Designed to accelerate Monte Carlo exploration and scenario testing by distribut
 
 ## References
 
-- Bieger, K., et al. (2015). Development and evaluation of bankfull hydraulic geometry relationships. *Journal of Hydrology*, 530, 761–771.
+- Bieger, K., Rathjens, H., Allen, P. M., & Arnold, J. G. (2015). Development and evaluation of bankfull hydraulic geometry relationships for the physiographic regions of the United States. *Journal of the American Water Resources Association*, 51(3), 842–858.
 - Cooper, H.H., & Rorabaugh, M.I. (1963). Ground-water movements and bank storage due to flood stages in surface streams. *USGS Water Supply Paper*, 1536-J.
 - Zhou, Y., et al. (2024). Regional bankfull geometry relationships. *Geomorphology*, 108897.
 
