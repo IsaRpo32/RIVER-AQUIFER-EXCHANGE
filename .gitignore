@@ -89,10 +89,16 @@ tmp/
 *.log
 *.bak
 
-# Data files (large)
-data/output/*.csv
-data/output/*.hdf5
-data/output/*.pkl
+# Outputs: keep the results used in the paper; ignore new runs (data/output/<name>/, zips) and validation runs
+data/output/*
+!data/output/.gitkeep
+!data/output/campaign/
+!data/output/metrics.csv
+!data/output/tables/
+!data/output/robustness/
+
+# Alternative figure not used in the paper (written by figures/fig10_11_pi_space.py)
+figures/output/*_2D*
 
 # Credentials and secrets
 .env

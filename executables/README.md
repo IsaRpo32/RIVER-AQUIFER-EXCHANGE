@@ -1,68 +1,41 @@
-# MODFLOW Executables
+# MODFLOW-NWT executable
 
-This directory should contain the MODFLOW-NWT executable required to run the simulations.
+Only the simulations (`simulations/run_campaign.py`, `simulations/parallel_modflow.py`, `validation/`) need
+MODFLOW-NWT. The post-processing, statistics and figures run from the results in `data/output/`.
 
-## Obtaining MODFLOW-NWT
+## Expected files
 
-MODFLOW-NWT is distributed by the U.S. Geological Survey (USGS) and can be downloaded from:
-
-**Official USGS Source:**
-https://www.usgs.gov/software/modflow-nwt-newton-formulation-modflow-2005
-
-### Download Instructions
-
-1. Visit the USGS MODFLOW-NWT page
-2. Download the appropriate version for your operating system:
-   - Windows: `mfnwt.exe`
-   - Linux: Compile from source or use pre-compiled binaries
-   - macOS: Compile from source
-
-3. Place the executable in this directory
-
-### Expected Files
-
-After download, this directory should contain:
+The scripts look for the executable here, with these names:
 
 ```
 executables/
-├── README.md          # This file
-├── mfnwt.exe          # Windows executable (or mfnwt for Linux/macOS)
-└── mf2005.exe         # Optional: MODFLOW-2005 executable
+├── MODFLOW-NWT.exe    Windows
+└── mfnwt              Linux / macOS
 ```
 
-## Alternative: Using FloPy's Executable Manager
+(`DEFAULT_EXE` in `simulations/parallel_modflow.py`.)
 
-FloPy can automatically download MODFLOW executables:
+## Version
 
-```python
-import flopy
+The paper simulations used **MODFLOW-NWT 1.3.0** (USGS): the official Windows 64-bit executable for half B of
+the main ensemble and an Intel-compiled Linux build for half A. Both give the same results within 0.00004 %.
 
-# Get the path to executables
-exe_path = flopy.which("mfnwt")
+Download the official release from the USGS:
+https://www.usgs.gov/software/modflow-nwt-newton-formulation-modflow-2005
 
-# Or download using flopy's get-modflow utility
-# python -m flopy.utils.get_modflow :mfnwt
+On Linux and macOS compile it from the source in that release, or install it with FloPy:
+
+```bash
+get-modflow :flopy        # downloads the USGS executables, mfnwt included, into FloPy's bin folder
 ```
 
-## Verification
+and copy `mfnwt` into this folder.
 
-To verify the executable works correctly:
+## Note on compilers
 
-```python
-import subprocess
-
-# Test execution
-result = subprocess.run(
-    ["./executables/mfnwt.exe", "-v"],
-    capture_output=True,
-    text=True
-)
-print(result.stdout)
-```
-
-## Note on Version Compatibility
-
-This project was developed using MODFLOW-NWT version 1.2.0. While newer versions should be compatible, please verify your results if using a different version.
+Different builds of the same version (e.g. Intel vs gfortran) differ by round-off: heads by up to a few mm
+and cumulative exchange by about 0.1 %. Use a single executable for every run of a set that will be compared
+or pooled.
 
 ## License
 

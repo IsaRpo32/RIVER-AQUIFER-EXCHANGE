@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="496.692825pt" height="316.102649pt" viewBox="0 0 496.692825 316.102649" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-14T11:48:52.022702</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.9.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 316.102649 
+L 496.692825 316.102649 
+L 496.692825 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 164.36446 178.756364 
+L 164.36446 38.029091 
+L 177.729357 38.029091 
+z
+" clip-path="url(#pc3f36e6510)" style="fill: #a7ad9c; opacity: 0.85"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 179.638628 189.451636 
+L 351.47302 189.451636 
+L 351.47302 183.822545 
+z
+" clip-path="url(#pc3f36e6510)" style="fill: #a7ad9c; opacity: 0.85"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 144.642928 202.765626 
+L 54.160001 287.242858 
+L 47.229799 281.435792 
+z
+" clip-path="url(#pc3f36e6510)" style="fill: #a7ad9c; opacity: 0.85"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 375.338908 277.265455 
+L 375.338908 222.381818 
+" clip-path="url(#pc3f36e6510)" style="fill: none; stroke: #3e5f78; stroke-width: 0.9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 375.338908 222.381818 
+L 381.066721 222.381818 
+" clip-path="url(#pc3f36e6510)" style="fill: none; stroke: #3e5f78; stroke-width: 0.9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 375.338908 277.265455 
+L 381.066721 277.265455 
+" clip-path="url(#pc3f36e6510)" style="fill: none; stroke: #3e5f78; stroke-width: 0.9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 375.338908 128.094545 
+L 375.338908 22.549091 
+" clip-path="url(#pc3f36e6510)" style="fill: none; stroke: #1b1b1a; stroke-width: 0.9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 375.338908 22.549091 
+L 381.066721 22.549091 
+" clip-path="url(#pc3f36e6510)" style="fill: none; stroke: #1b1b1a; stroke-width: 0.9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_6">
+    <path d="M 375.338908 128.094545 
+L 381.066721 128.094545 
+" clip-path="url(#pc3f36e6510)" style="fill: none; stroke: #1b1b1a; stroke-width: 0.9; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <!-- $\pi_3$ -->
+    <g style="fill: #1b1b1a" transform="translate(154.605918 14.134581)">
+     <text>
+      <tspan style="font: oblique 11px 'DejaVu Sans'" x="0" y="-0.984375">π</tspan>
+      <tspan style="font: 7.7px 'DejaVu Sans'" x="6.622559" y="0.8203125">3</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_2">
+    <!-- $\pi_2$ -->
+    <g style="fill: #1b1b1a" transform="translate(378.945263 195.672763)">
+     <text>
+      <tspan style="font: oblique 11px 'DejaVu Sans'" x="0" y="-0.984375">π</tspan>
+      <tspan style="font: 7.7px 'DejaVu Sans'" x="6.622559" y="0.8203125">2</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_3">
+    <!-- $\pi_1$ -->
+    <g style="fill: #1b1b1a" transform="translate(30.503302 312.476399)">
+     <text>
+      <tspan style="font: oblique 11px 'DejaVu Sans'" x="0" y="-0.984375">π</tspan>
+      <tspan style="font: 7.7px 'DejaVu Sans'" x="6.622559" y="0.8203125">1</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_4">
+    <text style="fill: #52514e; font: italic 7.2px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif; text-anchor: middle" x="183.092688" y="108.392727" transform="rotate(-90 183.092688 108.392727)">kinematic contrast (primary control)</text>
+   </g>
+   <g id="text_5">
+    <text style="fill: #1b1b1a; font: 700 8.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif; text-anchor: end" x="152.590622" y="50.312834" transform="rotate(-0 152.590622 50.312834)">Flood-transmitting</text>
+   </g>
+   <g id="text_6">
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(73.808982 59.721814)">wave crosses the reach</text>
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(60.87031 68.037146)">before the aquifer responds</text>
+   </g>
+   <g id="text_7">
+    <text style="fill: #1b1b1a; font: 700 8.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif; text-anchor: end" x="152.590622" y="160.080107" transform="rotate(-0 152.590622 160.080107)">Flood-regulating</text>
+   </g>
+   <g id="text_8">
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(77.55195 169.580493)">aquifer responds while</text>
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(73.80195 177.781567)">the wave is in the reach</text>
+   </g>
+   <g id="text_9">
+    <text style="fill: #52514e; font: italic 7.2px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif; text-anchor: middle" x="265.555824" y="181.463727" transform="rotate(-0 265.555824 181.463727)">storage partitioning (third control)</text>
+   </g>
+   <g id="text_10">
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(175.09041 205.32522)">Aquifer-buffered</text>
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(189.406621 213.526294)">storage</text>
+   </g>
+   <g id="text_11">
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(300.904919 205.233814)">Channel-controlled</text>
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(319.873474 213.434888)">storage</text>
+   </g>
+   <g id="text_12">
+    <text style="fill: #52514e; font: italic 7.2px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif; text-anchor: middle" x="90.820625" y="237.962049" transform="rotate(-46.548158 90.820625 237.962049)">vertical exchange efficiency (second control)</text>
+   </g>
+   <g id="text_13">
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(135.076515 232.296352)">Weak streambed</text>
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(135.076515 240.497426)">exchange</text>
+   </g>
+   <g id="text_14">
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(75.987424 287.554883)">Strong streambed</text>
+    <text style="fill: #52514e; font: 7.5px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(75.987424 295.843848)">exchange</text>
+   </g>
+   <g id="text_15">
+    <text style="fill: #3e5f78; font: 700 8.6px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif; text-anchor: start" x="384.885263" y="230.049622" transform="rotate(-0 384.885263 230.049622)">Increasing flood regulation</text>
+   </g>
+   <g id="text_16">
+    <!-- $\downarrow$ -->
+    <g style="fill: #3e5f78" transform="translate(383.168805 245.81755)">
+     <text>
+      <tspan style="font: 9px 'DejaVu Sans'" x="1.753418" y="-0.4375">↓</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_17">
+    <!-- lower $\pi_3$ (primary) -->
+    <g style="fill: #52514e" transform="translate(397.613736 245.479909)">
+     <text>
+      <tspan style="font: 7.8px 'Arial'" x="0 1.721802 6.031982 11.628784 15.938965 18.519775 29.009167 31.162366 33.743176 38.053357 40.634167 42.355969 48.81178 53.12196 55.702771 59.577771" y="-0.171875">lower  (primary)</tspan>
+      <tspan style="font: oblique 7.8px 'DejaVu Sans'" x="20.672974" y="-0.171875">π</tspan>
+      <tspan style="font: 5.46px 'DejaVu Sans'" x="25.338867" y="1.140625">3</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_18">
+    <!-- $\uparrow$ -->
+    <g style="fill: #3e5f78" transform="translate(383.168805 259.890277)">
+     <text>
+      <tspan style="font: 9px 'DejaVu Sans'" x="1.753418" y="-0.40625">↑</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_19">
+    <!-- higher $\pi_1$ (second) -->
+    <g style="fill: #52514e" transform="translate(397.613736 259.552636)">
+     <text>
+      <tspan style="font: 7.8px 'Arial'" x="0 4.310181 6.031982 10.342163 14.652344 18.962524 21.543335 32.032727 34.185925 36.766736 40.641736 44.951917 48.826917 53.137097 57.447278 61.757458" y="-0.171875">higher  (second)</tspan>
+      <tspan style="font: oblique 7.8px 'DejaVu Sans'" x="23.696533" y="-0.171875">π</tspan>
+      <tspan style="font: 5.46px 'DejaVu Sans'" x="28.362427" y="1.140625">1</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_20">
+    <!-- $\downarrow$ -->
+    <g style="fill: #3e5f78" transform="translate(383.168805 273.963004)">
+     <text>
+      <tspan style="font: 9px 'DejaVu Sans'" x="1.753418" y="-0.4375">↓</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_21">
+    <!-- lower $\pi_2$ (third) -->
+    <g style="fill: #52514e" transform="translate(397.613736 273.625364)">
+     <text>
+      <tspan style="font: 7.8px 'Arial'" x="0 1.721802 6.031982 11.628784 15.938965 18.519775 29.009167 31.162366 33.743176 35.896375 40.206555 41.928357 44.509167 48.819348" y="-0.171875">lower  (third)</tspan>
+      <tspan style="font: oblique 7.8px 'DejaVu Sans'" x="20.672974" y="-0.171875">π</tspan>
+      <tspan style="font: 5.46px 'DejaVu Sans'" x="25.338867" y="1.140625">2</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_22">
+    <!-- $\pi_4$ forcing (not ranked) -->
+    <g style="fill: #1b1b1a" transform="translate(384.885263 30.380364)">
+     <text>
+      <tspan style="font: oblique 8.8px 'DejaVu Sans'" x="0" y="-0.453125">π</tspan>
+      <tspan style="font: 6.16px 'DejaVu Sans'" x="5.267944" y="1.0234375">4</tspan>
+      <tspan style="font: 8.8px 'Arial'" x="9.41095 11.84198 14.27301 19.139343 22.053162 26.428162 28.372131 33.238464 38.104797 40.535828 43.449646 48.315979 53.182312 55.613342 58.044373 60.958191 65.824524 70.690857 75.065857 79.93219 84.798523" y="-0.453125"> forcing (not ranked)</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_23">
+    <!-- High $\pi_4$: event short relative -->
+    <g style="fill: #52514e" transform="translate(384.885263 49.130182)">
+     <text>
+      <tspan style="font: 7.6px 'Arial'" x="0 5.506531 7.200562 11.441223 15.681885 26.005621 28.124091 30.24256 34.483221 38.295721 42.536383 46.777045 48.895514 51.013983 54.826483 59.067145 63.307806 65.846991 67.96546 70.083929 72.623114 76.863776 78.557806 82.798468 84.916937 86.610968 90.423468" y="-0.265625">High : event short relative</tspan>
+      <tspan style="font: oblique 7.6px 'DejaVu Sans'" x="17.800354" y="-0.265625">π</tspan>
+      <tspan style="font: 5.32px 'DejaVu Sans'" x="22.390991" y="1.046875">4</tspan>
+     </text>
+    </g>
+    <text style="fill: #52514e; font: 7.6px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(384.885263 57.994513)">to aquifer response</text>
+   </g>
+   <g id="text_24">
+    <!-- Low $\pi_4$: event long enough for -->
+    <g style="fill: #52514e" transform="translate(384.885263 77.351636)">
+     <text>
+      <tspan style="font: 7.6px 'Arial'" x="0 4.240662 8.481323 13.987854 24.311591 26.43006 28.548529 32.789191 36.601691 40.842352 45.083014 47.201483 49.319952 51.013983 55.254645 59.495306 63.735968 65.854437 70.095099 74.33576 78.576422 82.817084 87.057745 91.298407 93.416876 95.535345 99.776007" y="-0.171875">Low : event long enough for</tspan>
+      <tspan style="font: oblique 7.6px 'DejaVu Sans'" x="16.106323" y="-0.171875">π</tspan>
+      <tspan style="font: 5.32px 'DejaVu Sans'" x="20.69696" y="1.140625">4</tspan>
+     </text>
+    </g>
+    <text style="fill: #52514e; font: 7.6px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(384.885263 86.095555)">exchange, storage and</text>
+    <text style="fill: #52514e; font: 7.6px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(384.885263 94.887449)">delayed return flow</text>
+   </g>
+   <g id="text_25">
+    <text style="fill: #1b1b1a; font: italic 7.6px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(384.885263 112.518017)">Controls exchanged and stored</text>
+    <text style="fill: #1b1b1a; font: italic 7.6px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(384.885263 121.287348)">volumes; little effect on peak</text>
+    <text style="fill: #1b1b1a; font: italic 7.6px 'Arial', 'Helvetica', 'DejaVu Sans', sans-serif" transform="translate(384.885263 129.869767)">attenuation</text>
+   </g>
+   <g id="patch_5">
+    <path d="M 160.545918 190.826922 
+Q 160.545918 108.391043 160.545918 27.073198 
+" clip-path="url(#pc3f36e6510)" style="fill: none; stroke: #1b1b1a; stroke-linecap: round"/>
+    <path d="M 158.345918 31.473198 
+L 160.545918 27.073198 
+L 162.745918 31.473198 
+z
+" clip-path="url(#pc3f36e6510)" style="fill: #1b1b1a; stroke: #1b1b1a; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 162.548823 192.829091 
+Q 265.555853 192.829091 367.444848 192.829091 
+" clip-path="url(#pc3f36e6510)" style="fill: none; stroke: #1b1b1a; stroke-linecap: round"/>
+    <path d="M 363.044848 190.629091 
+L 367.444848 192.829091 
+L 363.044848 195.029091 
+z
+" clip-path="url(#pc3f36e6510)" style="fill: #1b1b1a; stroke: #1b1b1a; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 159.081103 194.196681 
+Q 103.265325 246.307754 48.266773 297.655844 
+" clip-path="url(#pc3f36e6510)" style="fill: none; stroke: #1b1b1a; stroke-linecap: round"/>
+    <path d="M 52.984298 296.261227 
+L 48.266773 297.655844 
+L 49.981594 293.045053 
+z
+" clip-path="url(#pc3f36e6510)" style="fill: #1b1b1a; stroke: #1b1b1a; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_7">
+    <defs>
+     <path id="m0963ca4625" d="M 0 2.5 
+C 0.663008 2.5 1.29895 2.236584 1.767767 1.767767 
+C 2.236584 1.29895 2.5 0.663008 2.5 0 
+C 2.5 -0.663008 2.236584 -1.29895 1.767767 -1.767767 
+C 1.29895 -2.236584 0.663008 -2.5 0 -2.5 
+C -0.663008 -2.5 -1.29895 -2.236584 -1.767767 -1.767767 
+C -2.236584 -1.29895 -2.5 -0.663008 -2.5 0 
+C -2.5 0.663008 -2.236584 1.29895 -1.767767 1.767767 
+C -1.29895 2.236584 -0.663008 2.5 0 2.5 
+z
+" style="stroke: #1b1b1a"/>
+    </defs>
+    <g clip-path="url(#pc3f36e6510)">
+     <use xlink:href="#m0963ca4625" x="160.545918" y="52.101818" style="fill: #1b1b1a; stroke: #1b1b1a"/>
+    </g>
+   </g>
+   <g id="line2d_8">
+    <g clip-path="url(#pc3f36e6510)">
+     <use xlink:href="#m0963ca4625" x="160.545918" y="163.276364" style="fill: #1b1b1a; stroke: #1b1b1a"/>
+    </g>
+   </g>
+   <g id="line2d_9">
+    <g clip-path="url(#pc3f36e6510)">
+     <use xlink:href="#m0963ca4625" x="201.913457" y="192.829091" style="fill: #1b1b1a; stroke: #1b1b1a"/>
+    </g>
+   </g>
+   <g id="line2d_10">
+    <g clip-path="url(#pc3f36e6510)">
+     <use xlink:href="#m0963ca4625" x="332.38031" y="192.829091" style="fill: #1b1b1a; stroke: #1b1b1a"/>
+    </g>
+   </g>
+   <g id="line2d_11">
+    <g clip-path="url(#pc3f36e6510)">
+     <use xlink:href="#m0963ca4625" x="125.53016" y="225.52072" style="fill: #1b1b1a; stroke: #1b1b1a"/>
+    </g>
+   </g>
+   <g id="line2d_12">
+    <g clip-path="url(#pc3f36e6510)">
+     <use xlink:href="#m0963ca4625" x="66.441069" y="280.687844" style="fill: #1b1b1a; stroke: #1b1b1a"/>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pc3f36e6510">
+   <rect x="1.44" y="1.44" width="493.228346" height="309.6"/>
+  </clipPath>
+ </defs>
+</svg>
