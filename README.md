@@ -1,181 +1,198 @@
-# River-Aquifer Exchange Modeling
+# River–Aquifer Exchange: flood regulation in π-space
 
-A Python framework for modeling groundwater-surface water interactions using MODFLOW-NWT. This repository contains tools for geomorphic scaling, MODFLOW model setup, and Monte Carlo simulation of river-aquifer exchange dynamics, with support for parallel execution of simulations.
+Code and data for:
+
+> Restrepo-Correa, I., Gómez-Vélez, J. D., Jaramillo, M., Álvarez-Villa, O., & Cuéllar, E. *Timing matters: flood
+> regulation by river–aquifer exchange across scales.* Manuscript in preparation for *Journal of Hydrology*.
+
+The repository couples MODFLOW-NWT and the Streamflow-Routing package (SFR2) through FloPy to simulate transient
+river–aquifer exchange during flood events. A nondimensional formulation of the governing equations yields three
+system groups (π₁–π₃) and one forcing group (π₄). A Monte Carlo ensemble of 1,058 simulations, spanning drainage
+areas of 10³–10⁵ km², is used to rank the controls of flood regulation and to derive log–log scaling relationships
+for five dimensionless response metrics.
+
+Everything needed to reproduce the paper from the simulation results is included: the 1,058 results, the
+post-processing, the statistics and the figure scripts. Re-running the simulations needs MODFLOW-NWT.
 
 ---
 
-## Overview
+## Repository structure
 
-This project implements methodologies for analyzing transient river-aquifer exchange during flood events. It combines:
-
-- **Geomorphic scaling relationships** based on regional curves (Bieger et al., 2015; Zhou et al., 2024)
-- **Dimensionless Pi numbers** for hydraulic parameter analysis
-- **MODFLOW-NWT** groundwater modeling with Streamflow Routing (SFR2) package
-- **Monte Carlo simulation** for parameter space exploration
-- **Parallel MODFLOW execution** for efficient scenario analysis
-
----
-
-## Project Structure
 ```
-river-aquifer-exchange/
-├── README.md                           # This file
-├── LICENSE                             # MIT License
-├── requirements.txt                    # Python dependencies
-├── .gitignore                          # Git ignore rules
+RIVER-AQUIFER-EXCHANGE/
+├── src/                          reusable modules
+│   ├── geomorphic_scaling.py     channel geometry from drainage area
+│   ├── dimensionless_numbers.py  characteristic time and π-groups
+│   └── modflow_utils.py          topography, river, hydrograph, SFR2 output
 │
-├── src/                                # Active source code
-│   ├── __init__.py
-│   ├── geomorphic_scaling.py
-|    |- dimensionless.py        # Geomorphic scaling relationships
-│   ├── modflow_utils.py                # MODFLOW utilities and helpers
-│   └── signal_processing.py            # Signal processing utilities
+├── simulations/
+│   ├── montecarlo_sampling.ipynb        Monte Carlo sampling of the configurations
+│   ├── build_input_csv.py               main-ensemble inputs from the master Excel
+│   ├── build_high_connectivity_inputs.py  high-connectivity ensemble from the main one
+│   ├── parallel_modflow.py              the model: one MODFLOW-NWT + SFR2 run per row, in parallel
+│   ├── run_campaign.py                  resumable run of an input CSV
+│   └── sfr_series_utils.py              time vector and reach series of a finished run
 │
-├── simulations/                        # Simulation scripts and notebooks
-│   ├── parallel_modflow.py             # Parallel MODFLOW execution
-│   └── montecarlo_sampling.ipynb       # Monte Carlo parameter sampling
+├── validation/                   tests of the numerical model (time step, mass balance, GHB, duration)
+├── analysis/                     post-processing and statistics
+├── figures/                      figure scripts and their output (PDF, PNG 600 dpi, SVG)
 │
-├── executables/                        # MODFLOW executables (not tracked)
-│   └── README.md                       # Instructions for obtaining executables
+├── data/
+│   ├── input/                    input CSVs of both ensembles
+│   └── output/
+│       ├── campaign/             results of the 1,058 simulations
+│       ├── metrics.csv           π-groups and dimensionless metrics (post-processing)
+│       ├── tables/               paper tables
+│       └── robustness/           bootstrap and subsampling results
 │
-├── data/                               # Data directories
-│   ├── input/                          # Input data files
-│   └── output/                         # Simulation outputs
-│
-├── docs/                               # Documentation
-│   └── methodology.md                  # Detailed methodology
-│
-└── legacy/                             # Archived legacy code (reference only)
-    ├── README.md
-    └── ...
+├── docs/
+│   ├── methodology.md            model, sampling and metric definitions
+│   └── analysis_workflow.md      step by step, and which script makes each paper table and figure
+├── executables/                  MODFLOW-NWT executable (not tracked; see executables/README.md)
+└── legacy/                       archived code (reference only)
 ```
 
 ---
 
 ## Installation
 
-### Prerequisites
+Python ≥ 3.10 (tested with 3.12).
 
-- Python 3.8 or higher
-- MODFLOW-NWT executable (see `executables/README.md`)
-
-### Setup
-
-1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/river-aquifer-exchange.git
-cd river-aquifer-exchange
-```
-
-2. **Create a virtual environment** (recommended):
-```bash
+git clone https://github.com/IsaRpo32/RIVER-AQUIFER-EXCHANGE.git
+cd RIVER-AQUIFER-EXCHANGE
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. **Install dependencies:**
-```bash
+venv\Scripts\activate            # Linux/macOS: source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. **Download MODFLOW-NWT** executable and place it in the `executables/` directory.
+Only the simulations need MODFLOW-NWT (Niswonger et al., 2011): see `executables/README.md`.
 
 ---
 
-## Usage
+## Reproducing the paper
 
-### Geomorphic Scaling
+Every script can be run from any directory; the commands below assume the repository root.
 
-Estimate channel geometry from drainage area:
-```python
-from src import geomorphic_scaling as gs
+**1. Post-processing** (seconds)
 
-# Get bankfull dimensions for a 1000 km² watershed
-da_km2 = 1000
-w_bkf = gs.get_w_bkf(da_km2)  # Bankfull width (m)
-d_bkf = gs.get_d_bkf(da_km2)  # Bankfull depth (m)
-slope = gs.get_S(da_km2)      # Channel slope (m/m)
+```bash
+python analysis/postprocess_metrics.py
 ```
 
----
+Reads `data/output/campaign/*.csv` and writes `data/output/metrics.csv` (1,058 rows): characteristic scales,
+π-groups and the five metrics.
 
-### Running Simulations
+**2. Statistics**
 
-For parallel MODFLOW simulations:
-```python
-from simulations.parallel_modflow import run_simulation
-
-# Configure and run simulation
-results = run_simulation(
-    drainage_area=1000,
-    event_duration=5,  # days
-    n_workers=4
-)
+```bash
+python analysis/time_scale_test.py      # choice of the time scale of Δtₚ* and tᵣ*
+python analysis/other_scales_test.py
+python analysis/correlations.py
+python analysis/regressions.py
+python analysis/nechi_position.py
+python analysis/robustness.py           # several minutes
+python analysis/robustness_summary.py
 ```
 
+**3. Figures**
+
+```bash
+python figures/fig03_histograms.py
+python figures/fig04_scatter_pi.py
+python figures/fig05_scatter_processes.py
+python figures/fig06_07_obs_pred.py
+python figures/fig08_beta.py
+python figures/fig09_nechi.py
+python figures/fig10_11_pi_space.py
+python figures/fig11b_schematic.py
+```
+
+Which script produces each table and figure of the manuscript: `docs/analysis_workflow.md`, Section 6.
+
+**4. Simulations** (optional; hours to days depending on the machine)
+
+```bash
+python simulations/run_campaign.py inputs_n_corregido_mitad_A.csv 8      # main ensemble, half A, 8 in parallel
+python simulations/run_campaign.py inputs_n_corregido_mitad_B.csv 8      # main ensemble, half B
+python simulations/run_campaign.py inputs_high_connectivity.csv 8        # high-connectivity ensemble
+```
+
+Each call reads the CSV from `data/input/`, skips the rows already finished (so it can be stopped and run again)
+and writes `data/output/<name>/results.csv` with every finished row, plus a zip to send the results. Copy
+`results.csv` over the corresponding file in `data/output/campaign/` and go back to step 1.
+
 ---
 
-## Key Modules
+## Ensembles
 
-### `src/geomorphic_scaling.py`
+| Ensemble | Input | Results | Configurations |
+|---|---|---|---|
+| Main | `data/input/inputs_n_corregido.csv` (run as halves `_mitad_A`, `_mitad_B`) | `campaign/main_half_A.csv`, `main_half_B.csv` | 758 |
+| High connectivity | `data/input/inputs_high_connectivity.csv` | `campaign/high_connectivity.csv` | 300 |
 
-Regional geomorphic relationships based on:
-- **Bieger et al. (2015):** Bankfull width and depth scaling
-- **Zhou et al. (2024):** Channel geometry relationships
-- **Hack's Law:** Hydraulic length scaling
-
----
-
-### `src/modflow_utils.py`
-
-Utilities for MODFLOW model construction:
-- Cooper-Rorabaugh (1963) hydrograph generation
-- Topography and river network creation
-- SFR2 package configuration
-- Results extraction and analysis
+Manning coefficients are n = 0.025–0.045 (Chow, 1959); `inputs_n_original.csv` keeps the earlier values, ten times
+larger, for comparison. The high-connectivity ensemble reuses the main configurations with Kr and Ka of
+coarse-sand and gravel beds (C_riv up to 30 m²/s). Its `IDMERGE` values repeat those of the main ensemble, so
+results are keyed by (`ensemble`, `IDMERGE`). The raw SFR2 and listing files of the runs (several GB) are not
+included.
 
 ---
 
-### `simulations/parallel_modflow.py`
+## Key definitions
 
-Parallel execution utilities for running multiple MODFLOW scenarios efficiently.
-Designed to accelerate Monte Carlo exploration and scenario testing by distributing independent MODFLOW runs across multiple workers.
+| Quantity | Definition |
+|---|---|
+| Aquifer response time | t_c = S_y B² / (K_a d_bkf) |
+| Kinematic travel time | t_L = L / c_k, with c_k = (5/3)(1/n) S^½ d_bkf^⅔ (bankfull stage) |
+| Vertical exchange efficiency | π₁ = t_c K_r / d_r |
+| Storage partitioning | π₂ = W_bkf / (S_y B) |
+| Kinematic contrast | π₃ = (d_bkf^⅔ S^½ / n) / (B / t_c) |
+| Event persistence (forcing) | π₄ = t_c / t_d |
+| Peak delay | Δtₚ* = (t_p,out − t_p,in) / t_L |
+| Stage attenuation | ΔH* = (H_p,in − H_p,out) / d_bkf |
+| Net exchange | ΔLeakage* = ∫(Q_exc,in − Q_exc,out) dt / (B L d_bkf) |
+| Return time | tᵣ* = tᵣ / t_L |
+| Storage change | ΔStorage* = (V_storage,out − V_storage,in) / (B L d_bkf) |
+
+B is the total aquifer width, with the channel at the centre line. Δtₚ* and tᵣ* are scaled with t_L and not with
+t_c, because t_c also enters π₁, π₃ and π₄ and would induce spurious correlation (`analysis/time_scale_test.py`).
+Details in `docs/methodology.md` and `docs/analysis_workflow.md`.
+
+---
 
 ## References
 
-- Bieger, K., Rathjens, H., Allen, P. M., & Arnold, J. G. (2015). Development and evaluation of bankfull hydraulic geometry relationships for the physiographic regions of the United States. *Journal of the American Water Resources Association*, 51(3), 842–858.
-- Cooper, H.H., & Rorabaugh, M.I. (1963). Ground-water movements and bank storage due to flood stages in surface streams. *USGS Water Supply Paper*, 1536-J.
-- Zhou, Y., et al. (2024). Regional bankfull geometry relationships. *Geomorphology*, 108897.
-
----
-
-## License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+- Bakker, M., et al. (2016). Scripting MODFLOW model development using Python and FloPy. *Groundwater*, 54(5), 733–739.
+- Bieger, K., Rathjens, H., Allen, P. M., & Arnold, J. G. (2015). Development and evaluation of bankfull hydraulic
+  geometry relationships for the physiographic regions of the United States. *Journal of the American Water
+  Resources Association*, 51(3), 842–858.
+- Chow, V. T. (1959). *Open-channel hydraulics*. McGraw-Hill.
+- Cooper, H. H., Jr., & Rorabaugh, M. I. (1963). Ground-water movements and bank storage due to flood stages in surface
+  streams. U.S. Geological Survey Water-Supply Paper 1536-J.
+- Flint, J. J. (1974). Stream gradient as a function of order, magnitude, and discharge. *Water Resources Research*,
+  10(5), 969–973.
+- Gomez-Velez, J. D., Wilson, J. L., Cardenas, M. B., & Harvey, J. W. (2017). Flow and residence times of dynamic
+  riverbank storage and sinuosity-driven hyporheic exchange. *Water Resources Research*, 53(10), 8572–8595.
+- Kenney, B. C. (1982). Beware of spurious self-correlations! *Water Resources Research*, 18(4), 1041–1048.
+- Niswonger, R. G., & Prudic, D. E. (2005). Documentation of the Streamflow-Routing (SFR2) Package. U.S. Geological
+  Survey Techniques and Methods 6-A13.
+- Niswonger, R. G., Panday, S., & Ibaraki, M. (2011). MODFLOW-NWT, a Newton formulation for MODFLOW-2005. U.S.
+  Geological Survey Techniques and Methods 6-A37.
 
 ---
 
 ## Citation
 
-If you use this code in your research, please cite:
 ```bibtex
 @software{river_aquifer_exchange,
-  author = {Isabel Restrepo},
-  title = {River-Aquifer Exchange Modeling Framework},
-  year = {2025},
-  url = {https://github.com/IsaRpo32/RIVER-AQUIFER-EXCHANGE.git}
+  author = {Restrepo-Correa, Isabel},
+  title  = {River-Aquifer Exchange: flood regulation in pi-space},
+  year   = {2026},
+  url    = {https://github.com/IsaRpo32/RIVER-AQUIFER-EXCHANGE}
 }
 ```
 
----
+## License
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
----
-
-## Contact
-
-For questions or collaboration, please open an issue or contact the maintainer.
-
+MIT License. See [LICENSE](LICENSE).

@@ -110,7 +110,24 @@ T_c = 0.0195 × L^0.77 × S^-0.385 × 60
 
 ## 3. Dimensionless Analysis
 
-To analyze the system, we purpose something pi numbers that are dimensionless number that allow understand the system. These are explained in paper.
+Nondimensionalizing the governing equations with the length scales `B` and `d_bkf` gives three system
+groups and one forcing group (computed in `analysis/postprocess_metrics.py`):
+
+| Group | Definition | Meaning |
+|-------|------------|---------|
+| Aquifer response time | `t_c = S_y·B² / (K_a·d_bkf)` | characteristic time scale |
+| π₁ | `t_c·K_r / d_r` | vertical exchange efficiency |
+| π₂ | `w_bkf / (S_y·B)` | storage partitioning |
+| π₃ | `(d_bkf^(2/3)·S^(1/2) / n) / (B / t_c)` | kinematic contrast (bankfull Manning velocity over aquifer response velocity) |
+| π₄ | `t_c / t_d` | event persistence (forcing) |
+
+`B` is the total aquifer width, with the channel in the central column. `t_c` enters π₁, π₃ and π₄, so
+π₃ and π₄ are strongly collinear (r = 0.96 in log space); the hierarchy of controls is therefore ranked
+with π₁–π₃ only, and π₄ is used in the predictive models (`analysis/regressions.py`).
+
+The kinematic travel time along the reach, `t_L = L / c_k` with `c_k = (5/3)·d_bkf^(2/3)·S^(1/2)/n`,
+is the scale of the peak delay and the return time (Section 6).
+
 ## 4. Numerical Modeling
 
 ### 4.1 MODFLOW-NWT Configuration
@@ -119,11 +136,12 @@ The groundwater model uses MODFLOW-NWT with the following packages:
 
 | Package | Purpose |
 |---------|---------|
-| DIS | Model discretization |
-| BAS | Basic package (boundary conditions) |
-| LPF/UPW | Layer property flow |
-| NWT | Newton solver |
-| SFR2 | Streamflow routing |
+| DIS | Discretization: 4 layers, 65 columns across `B`, 100–200 rows along `L` |
+| BAS | Active cells and initial heads |
+| UPW | Aquifer properties (`K_a`, `K_v = K_a`, `S_y`, `S_s = 10⁻⁷ m⁻¹`, convertible layers) |
+| NWT | Newton solver (`headtol = 1e-5`, `fluxtol = 1000`) |
+| SFR2 | Streamflow routing with kinematic-wave routing (`IRTFLG = 3`, `NUMTIM = 50`, `WEIGHT = 0.75`) |
+| GHB | Upstream and downstream aquifer boundaries |
 | OC | Output control |
 
 ### 4.2 Model Domain
@@ -142,10 +160,15 @@ The groundwater model uses MODFLOW-NWT with the following packages:
 
 ### 4.3 Boundary Conditions
 
-- **River (SFR2)**: Time-varying stage from hydrograph
-- **Lateral boundaries**: No-flow (symmetry assumption)
-- **Bottom**: No-flow (impermeable base)
-- **Top**: Water table (unconfined)
+- **River (SFR2)**: one segment along the central column; inflow hydrograph at the upstream end
+  (Section 2.2), streambed conductance `K_r·w_bkf·Δx / d_r`
+- **Upstream and downstream boundaries** (first and last rows): GHB in every layer, with head at the
+  base-flow river level (minus `S·L` downstream) and conductance `K_a·w_bkf·Δx / D`. A sensitivity test
+  with the conductance ×0.1 and ×10 changes the exchange by ≤ 5 % (`validation/test_ghb.py`)
+- **Lateral boundaries** (first and last columns): inactive cells, i.e. no-flow
+- **Bottom**: the lowest of the four layers is inactive, so the base is no-flow and the active
+  thickness is somewhat less than `D`
+- **Top**: water table (unconfined)
 
 ### 4.4 Time Discretization
 
@@ -179,16 +202,20 @@ the return flow before it finished.
 
 ### 5.1 Parameter Sampling
 
-Parameters are sampled within physically realistic ranges:
+Geometry scales with drainage area (Section 1); aquifer and streambed properties are sampled
+(`simulations/montecarlo_sampling.ipynb`). The 758 configurations of the main ensemble come from the
+master Excel through `simulations/build_input_csv.py`, and span:
 
-| Parameter | Range | Distribution |
-|-----------|-------|--------------|
-| K_a | 10⁻⁷ - 10⁻⁴ m/s | Log-uniform |
-| K_r/K_a | 10⁻³ - 10⁻¹ | Log-uniform |
-| S_y | 0.10 - 0.30 | Uniform |
-| n (Manning) | 0.025 - 0.045 | Uniform |
-| B/w_bkf | 10 - 200 | Uniform |
-| D/d_bkf | 1 - 20 | Uniform |
+| Parameter | Main ensemble (758) | Distribution |
+|-----------|---------------------|--------------|
+| K_a | 5.8×10⁻⁷ – 2.6×10⁻² m/s | K_a = r·K_r, r = K_a/K_r log-uniform in [10, 1000] |
+| K_r | 10⁻⁸ – 9.5×10⁻⁵ m/s | Log-uniform |
+| S_y | 0.10 – 0.30 | Uniform |
+| n (Manning) | 0.025 – 0.045 | Uniform (Section 5.4) |
+| B/w_bkf | 13 – 200 | Uniform |
+| D/d_bkf | 1 – 20 | Uniform |
+| d_r/d_bkf, H_0/d_bkf | 0.3 | Fixed |
+| t_d | {0.7, 1.0, 1.3} × 0.6·T_c (1.3 – 38 d) | Three durations per area class |
 
 ### 5.2 Constraint-Based Filtering
 
@@ -212,19 +239,39 @@ input `data/input/inputs_n_corregido.csv` keeps the same 758 draws divided by 10
 original value in `n_original`. `inputs_n_original.csv` has the same rows with the original `n`,
 for comparison. Both are built from the master Excel by `simulations/build_input_csv.py`.
 
+### 5.5 High-Connectivity Ensemble
+
+The main ensemble has low streambed conductances (`C_riv` = 10⁻⁴ – 0.2 m²/s). A second ensemble of 300
+configurations (`data/input/inputs_high_connectivity.csv`) keeps the geometry, `S_y`, forcing and `n`
+of the main configurations and reassigns `K_r` and `K_a` for coarse-sand and gravel beds: `K_a/K_r`
+log-uniform in [1, 10], `K_r` log-uniform in [10⁻⁴, 10⁻²·K_r/K_a] m/s; rows with `K_r > 10⁻³ m/s`
+(clean gravel) are dropped and 100 configurations are drawn per drainage-area class. This gives
+`C_riv` = 0.2 – 30 m²/s. The file is rebuilt by `simulations/build_high_connectivity_inputs.py` (see its
+docstring for how it reproduces the simulated file). Its `IDMERGE` values repeat those of the main rows
+the configurations come from, so results are keyed by (ensemble, `IDMERGE`).
+
 ## 6. Response Metrics
 
-The five response metrics of the manuscript (Eq. 16–20). `parallel_modflow.py` exports the
-dimensional quantities for each row; the normalization (the metrics marked with `*`) is done in
-post-processing. All times are measured from the start of the transient period.
+The five response metrics. `parallel_modflow.py` exports the dimensional quantities for each row; the
+normalization (the metrics marked with `*`) is done by `analysis/postprocess_metrics.py`. All times are
+measured from the start of the transient period.
 
 | Metric | Definition | Exported columns |
 |--------|------------|------------------|
-| Peak delay (Eq. 16) | `Δt_p* = (t_p,out − t_p,in) / t_c` | `delta_tp`, `t_p_in`, `t_p_out` |
-| Stage attenuation (Eq. 17) | `ΔH* = (H_p,in − H_p,out) / d_bkf` | `delta_H`, `H_p_in`, `H_p_out`, `H_ratio` |
-| Flood-exchange efficiency (Eq. 18) | `ΔLeakage* = ∫(Q_exc,in − Q_exc,out) dt / (B·L·d_bkf)` | `STREAM_LEAKAGE_IN`, `STREAM_LEAKAGE_OUT` |
-| Return time (Eq. 19) | `t_r* = t_r / t_c` | `t_r` |
-| Storage change (Eq. 20) | `ΔStorage* = (V_storage,out − V_storage,in) / (B·L·d_bkf)` | `STORAGE_OUT`, `STORAGE_IN` |
+| Peak delay | `Δt_p* = (t_p,out − t_p,in) / t_L` | `delta_tp`, `t_p_in`, `t_p_out` |
+| Stage attenuation | `ΔH* = (H_p,in − H_p,out) / d_bkf` | `delta_H`, `H_p_in`, `H_p_out`, `H_ratio` |
+| Flood-exchange efficiency | `ΔLeakage* = ∫(Q_exc,in − Q_exc,out) dt / (B·L·d_bkf)` | `STREAM_LEAKAGE_IN`, `STREAM_LEAKAGE_OUT` |
+| Return time | `t_r* = t_r / t_L` | `t_r` |
+| Storage change | `ΔStorage* = (V_storage,out − V_storage,in) / (B·L·d_bkf)` | `STORAGE_OUT`, `STORAGE_IN` |
+
+**Time scale of `Δt_p*` and `t_r*`.** Earlier versions of the manuscript (up to v14) divided both by
+`t_c`. Because `t_c` also enters π₁, π₃ and π₄, that normalization creates correlation by itself: with
+`Δt_p` shuffled at random among the simulations, `Δt_p/t_c` still gives R² = 0.87 against π₁–π₃ (0.84
+for `t_r`), against 0.07 with `t_L` (0.05 for `t_r`) (`analysis/time_scale_test.py`; Kenney, 1982).
+Since manuscript v15 both are scaled with the kinematic travel time `t_L`; the `t_c` versions are kept in
+`metrics.csv` as `delta_tp*_tc` and `t_r*_tc`. `ΔH*`, `ΔLeakage*` and `ΔStorage*` do not show this
+problem (`analysis/other_scales_test.py`). Note that `Δt_p` is close to `t_L` itself (`Δt_p*` ≈ 1–3), so
+the peak delay mostly reflects the travel time of the wave along the reach.
 
 How each quantity is obtained (`flood_wave_metrics`, `return_time`):
 
@@ -240,8 +287,8 @@ How each quantity is obtained (`flood_wave_metrics`, `return_time`):
   end of the run. In MODFLOW's sign convention, `STREAM_LEAKAGE_IN` is water entering the aquifer
   from the river and `STREAM_LEAKAGE_OUT` the reverse; `STORAGE_OUT` is water taken into storage
   and `STORAGE_IN` water released from it. So `STREAM_LEAKAGE_IN − STREAM_LEAKAGE_OUT` is the
-  net river-to-aquifer volume of Eq. 18, and `STORAGE_OUT − STORAGE_IN` the net storage gain of
-  Eq. 20. The other budget terms (`CONSTANT_HEAD_*`, `HEAD_DEP_BOUNDS_*` for the GHB, `TOTAL_*`,
+  net river-to-aquifer volume of `ΔLeakage*`, and `STORAGE_OUT − STORAGE_IN` the net storage gain of
+  `ΔStorage*`. The other budget terms (`CONSTANT_HEAD_*`, `HEAD_DEP_BOUNDS_*` for the GHB, `TOTAL_*`,
   `PERCENT_DISCREPANCY`) are exported too.
 
 Earlier versions took `Δt_p` and `ΔH` from the time of maximum simulated depth at the second and
@@ -267,4 +314,6 @@ enough), `nstp_total`, `dt_min_s` and `duration_days`.
 5. Chow, V.T. (1959). *Open-Channel Hydraulics*. McGraw-Hill, New York.
 
 6. Arcement, G.J., & Schneider, V.R. (1989). Guide for selecting Manning's roughness coefficients for natural channels and flood plains. *USGS Water-Supply Paper* 2339.
+
+7. Kenney, B.C. (1982). Beware of spurious self-correlations! *Water Resources Research*, 18(4), 1041-1048.
 
