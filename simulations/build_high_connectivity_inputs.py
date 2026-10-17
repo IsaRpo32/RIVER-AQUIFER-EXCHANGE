@@ -1,7 +1,7 @@
 """
 Build the input CSV of the high-connectivity ensemble (300 configurations) from the main ensemble.
 
-The main ensemble (data/input/inputs_n_corregido.csv, 758 rows) has low streambed conductances
+The main ensemble (data/input/inputs_main.csv, 758 rows) has low streambed conductances
 (C_riv = 1e-4 to 0.2 m2/s). The high-connectivity ensemble keeps the geometry, Sy, forcing and
 Manning n of those rows and reassigns Kr and Ka for coarse-sand and gravel beds:
 
@@ -63,7 +63,7 @@ def sample_per_class(d: pd.DataFrame) -> pd.DataFrame:
     return m.sort_values("C", ascending=False).reset_index(drop=True)
 
 
-def build(main_csv: Path = DATA_INPUT / "inputs_n_corregido.csv") -> pd.DataFrame:
+def build(main_csv: Path = DATA_INPUT / "inputs_main.csv") -> pd.DataFrame:
     d = pd.read_csv(main_csv)
     d = d.sort_values(["Kr", "IDMERGE"], kind="mergesort").reset_index(drop=True)
     for col in ("Kr", "Ka", "S"):

@@ -33,8 +33,8 @@ def recompute_times(params: pd.Series, cfg: dict) -> np.ndarray:
     if cfg['mode'] == 'courant':
         tc = dn.get_tc(Sy=Sy, Ka=Ka, B=B, d_bkf=d_bkf)
         tc3 = Sy * (delr * delc) / (4 * Ka * D)
-        valores = 1 / np.array([L / v_max, tc, t[np.argmax(Q)], tc3])
-        delta_t_TC = 0.25 * len(valores) / np.sum(valores)
+        rates = 1 / np.array([L / v_max, tc, t[np.argmax(Q)], tc3])
+        delta_t_TC = 0.25 * len(rates) / np.sum(rates)
         cte = {1000: .5, 10000: .35}.get(params["da_km2"], .3)
         delta_t = min(delta_t_TC, cfg['courant_factor'] * cte * reach_len / v_max)
         perlen, nstp, tsmult = [duration], [int(np.ceil(duration / delta_t))], [1.0]

@@ -1,14 +1,14 @@
 """
 Run a campaign (or one part of it) on any machine, resumable, and pack the results to send back.
 
-    python simulations/run_campaign.py inputs_n_corregido_mitad_A.csv     # one half of the main ensemble
-    python simulations/run_campaign.py inputs_n_corregido_mitad_B.csv 8   # the other half, 8 parallel simulations
+    python simulations/run_campaign.py inputs_main_half_A.csv             # one half of the main ensemble
+    python simulations/run_campaign.py inputs_main_half_B.csv 8           # the other half, 8 parallel simulations
     python simulations/run_campaign.py inputs_high_connectivity.csv 8     # the high-connectivity ensemble
 
 The CSV is read from ../data/input/. Rows already finished (data/output/<name>/rows_done.jsonl) are
 skipped, so the run can be stopped and started again. At the end it writes
 data/output/<name>/results.csv with every finished row (the file the analysis uses), and in data/output/:
-    enviar_resultados_<name>.zip   small: results CSV and rows_done.jsonl (all metrics and budget terms)
+    results_<name>.zip             small: results CSV and rows_done.jsonl (all metrics and budget terms)
     sfr_out_<name>.zip             large: every .sfr.out and .list (only needed to recompute the series)
 """
 import json
@@ -21,7 +21,7 @@ import pandas as pd
 
 from parallel_modflow import DATA_INPUT, DATA_OUTPUT, DEFAULT_EXE, consolidate_results, run_parallel_simulations
 
-INPUT_NAME = sys.argv[1] if len(sys.argv) > 1 else "inputs_n_corregido.csv"
+INPUT_NAME = sys.argv[1] if len(sys.argv) > 1 else "inputs_main.csv"
 WORKERS = int(sys.argv[2]) if len(sys.argv) > 2 else max(1, mp.cpu_count() - 2)
 NAME = Path(INPUT_NAME).stem
 NAME = NAME[len("inputs_"):] if NAME.startswith("inputs_") else NAME
@@ -55,7 +55,7 @@ def write_results(out_dir: Path, rows: pd.DataFrame) -> Path:
 
 
 def pack(out_dir: Path):
-    small = DATA_OUTPUT / f"enviar_resultados_{NAME}.zip"
+    small = DATA_OUTPUT / f"results_{NAME}.zip"
     with zipfile.ZipFile(small, "w", zipfile.ZIP_DEFLATED) as z:
         for f in out_dir.glob("*.csv"):
             z.write(f, f.relative_to(DATA_OUTPUT))

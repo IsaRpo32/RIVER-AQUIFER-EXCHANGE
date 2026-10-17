@@ -14,7 +14,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from parallel_modflow import DATA_INPUT, DEFAULT_EXE, run_single_simulation
 
-INPUT_CSV = DATA_INPUT / "inputs_n_corregido.csv"
+INPUT_CSV = DATA_INPUT / "inputs_main.csv"
 
 OUT = ROOT / "data" / "output" / "validation"
 RUNS = str(OUT / "runs")

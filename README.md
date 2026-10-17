@@ -39,11 +39,12 @@ RIVER-AQUIFER-EXCHANGE/
 │
 ├── data/
 │   ├── input/                    input CSVs of both ensembles
-│   └── output/
-│       ├── campaign/             results of the 1,058 simulations
-│       ├── metrics.csv           π-groups and dimensionless metrics (post-processing)
-│       ├── tables/               paper tables
-│       └── robustness/           bootstrap and subsampling results
+│   ├── output/
+│   │   ├── campaign/             results of the 1,058 simulations
+│   │   ├── metrics.csv           π-groups and dimensionless metrics (post-processing)
+│   │   ├── tables/               paper tables
+│   │   └── robustness/           bootstrap and subsampling results
+│   └── supplementary/            inputs and results of the 1,058 simulations, as published with the paper
 │
 ├── docs/
 │   ├── methodology.md            model, sampling and metric definitions
@@ -108,13 +109,13 @@ python figures/fig10_11_pi_space.py
 python figures/fig11b_schematic.py
 ```
 
-Which script produces each table and figure of the manuscript: `docs/analysis_workflow.md`, Section 6.
+Which script produces each table and figure of the manuscript: `docs/analysis_workflow.md`, Section 7.
 
 **4. Simulations** (optional; hours to days depending on the machine)
 
 ```bash
-python simulations/run_campaign.py inputs_n_corregido_mitad_A.csv 8      # main ensemble, half A, 8 in parallel
-python simulations/run_campaign.py inputs_n_corregido_mitad_B.csv 8      # main ensemble, half B
+python simulations/run_campaign.py inputs_main_half_A.csv 8              # main ensemble, half A, 8 in parallel
+python simulations/run_campaign.py inputs_main_half_B.csv 8              # main ensemble, half B
 python simulations/run_campaign.py inputs_high_connectivity.csv 8        # high-connectivity ensemble
 ```
 
@@ -128,7 +129,7 @@ and writes `data/output/<name>/results.csv` with every finished row, plus a zip 
 
 | Ensemble | Input | Results | Configurations |
 |---|---|---|---|
-| Main | `data/input/inputs_n_corregido.csv` (run as halves `_mitad_A`, `_mitad_B`) | `campaign/main_half_A.csv`, `main_half_B.csv` | 758 |
+| Main | `data/input/inputs_main.csv` (run as halves `_half_A`, `_half_B`) | `campaign/main_half_A.csv`, `main_half_B.csv` | 758 |
 | High connectivity | `data/input/inputs_high_connectivity.csv` | `campaign/high_connectivity.csv` | 300 |
 
 Manning coefficients are n = 0.025–0.045 (Chow, 1959); `inputs_n_original.csv` keeps the earlier values, ten times
@@ -136,6 +137,23 @@ larger, for comparison. The high-connectivity ensemble reuses the main configura
 coarse-sand and gravel beds (C_riv up to 30 m²/s). Its `IDMERGE` values repeat those of the main ensemble, so
 results are keyed by (`ensemble`, `IDMERGE`). The raw SFR2 and listing files of the runs (several GB) are not
 included.
+
+---
+
+## Supplementary data
+
+`data/supplementary/` holds the data files published as supplementary material of the paper, in one place and
+with self-explanatory column names:
+
+| File | Content |
+|---|---|
+| `model_inputs.csv` | model inputs of the 1,058 configurations (main ensemble, then high-connectivity ensemble), in the column names the model reads (`simulations/parallel_modflow.py`) |
+| `model_results.csv` | inputs, results, characteristic scales, π-groups and dimensionless metrics of the 1,058 simulations, one row per simulation, in the same order as `model_inputs.csv` |
+| `model_results_dictionary.csv` | symbol, description and units of every column of `model_results.csv` |
+
+`model_results.csv` holds the same values as `data/output/metrics.csv`. Rows are keyed by (`ensemble`, `config_id`);
+`config_id` is the `IDMERGE` of the other files. In `model_inputs.csv`, the high-connectivity rows are those with
+`Kr_old` filled in.
 
 ---
 

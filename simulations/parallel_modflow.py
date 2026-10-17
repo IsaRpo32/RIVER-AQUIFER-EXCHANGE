@@ -334,17 +334,17 @@ def run_single_simulation(simulation_params: Tuple) -> Dict:
         
         t_mean = L/v_mean 
         t_max = L/v_max
-        t_canal = L / v_max
+        t_channel = L / v_max
         
         V_hid = (np.trapezoid(Q, t))
         tc = dn.get_tc(Sy=Sy, Ka=Ka, B=B, d_bkf=d_bkf)
         
-        a_celda = np.sqrt(delr * delc)
-        tc3 = Sy * a_celda**2 / (4 * T)
-        t_pico = t[idx_Qmax]
-        valores = 1/np.array([t_canal, tc, t_pico, tc3])
+        cell_size = np.sqrt(delr * delc)
+        tc3 = Sy * cell_size**2 / (4 * T)
+        t_peak = t[idx_Qmax]
+        rates = 1/np.array([t_channel, tc, t_peak, tc3])
         
-        TC = len(valores) / np.sum(valores)
+        TC = len(rates) / np.sum(rates)
         delta_t_TC = 0.25 * TC
         reach_len = L / nrow
         area = params["da_km2"]
@@ -358,7 +358,7 @@ def run_single_simulation(simulation_params: Tuple) -> Dict:
             cteCourant = .3
         
         duration_days = time_cfg['duration_days'] or duration_by_basin(dakm2)
-        duracion_transitorio = duration_days * 24 * 3600
+        transient_length = duration_days * 24 * 3600
         t_delay = 1*24*3600
         numtim = 50
 
@@ -366,12 +366,12 @@ def run_single_simulation(simulation_params: Tuple) -> Dict:
             # Old scheme: one uniform transient step limited by Courant (flow velocity) and TC
             delta_t_courant = time_cfg['courant_factor']*cteCourant*reach_len / v_max
             delta_t = min(delta_t_TC, delta_t_courant)
-            trans_perlen = [duracion_transitorio]
-            trans_nstp = [int(time_cfg['nstp_uniform'] or np.ceil(duracion_transitorio / delta_t))]
+            trans_perlen = [transient_length]
+            trans_nstp = [int(time_cfg['nstp_uniform'] or np.ceil(transient_length / delta_t))]
             trans_tsmult = [1.0]
         else:
             trans_perlen, trans_nstp, trans_tsmult = build_adaptive_periods(
-                duracion_transitorio, t_delay, t_d, v_max, reach_len, numtim, time_cfg)
+                transient_length, t_delay, t_d, v_max, reach_len, numtim, time_cfg)
 
         perlen = [1*24*3600] + trans_perlen
         nstp = [1] + trans_nstp
@@ -408,7 +408,7 @@ def run_single_simulation(simulation_params: Tuple) -> Dict:
         hydrogram = np.c_[t + t0 + t_delay, np.vstack(Q)]
         # Base flow after the event until past the end of the run: SFR averages the table over each step and
         # takes zero flow beyond the last entry, which produced a one-step drop of the inflow at t_d
-        hydrogram = np.vstack([hydrogram, [t0 + t_delay + t_d, Q[0]], [t0 + duracion_transitorio + 86400, Q[0]]])
+        hydrogram = np.vstack([hydrogram, [t0 + t_delay + t_d, Q[0]], [t0 + transient_length + 86400, Q[0]]])
         np.savetxt(os.path.join(path_results, "QHidrom.dat"), hydrogram, fmt="%.4f")
         
         model.add_external(
@@ -707,7 +707,7 @@ def consolidate_results(results_list: List[Dict], original_dt: pd.DataFrame) -> 
     return dt_results
 
 def run_parallel_simulations(n_simulations: int = None, max_workers: int = None, cleanup_mode: str = 'essential',
-                             input_csv_path: str = str(DATA_INPUT / "inputs_n_corregido.csv"),
+                             input_csv_path: str = str(DATA_INPUT / "inputs_main.csv"),
                              base_results_dir: str = str(DATA_OUTPUT),
                              simulation_subdir: str = "simple_model",
                              modflow_exe_path: str = DEFAULT_EXE,
@@ -728,8 +728,8 @@ def run_parallel_simulations(n_simulations: int = None, max_workers: int = None,
     # Load parameters
     logger.info("Loading simulation parameters...")
     dt = pd.read_csv(input_csv_path, sep=None, engine="python", encoding="utf-8-sig")  # accepts ',' or ';'
-    if "repetir" in dt.columns:
-        dt = dt[dt["repetir"] == 1]
+    if "run" in dt.columns:                      # run = 0 skips a row
+        dt = dt[dt["run"] == 1]
     # simulation_id is positional (dt.iloc[i]); keep index aligned so results land on the right row
     dt = dt.reset_index(drop=True)
 
@@ -845,7 +845,7 @@ if __name__ == "__main__":
     CLEANUP_MODE = 'none'  # 'essential', 'none', or 'full'
 
     # Campaign: corrected Manning n (inputs built by build_input_csv.py from the master Excel)
-    CAMPAIGN = "n_corregido"   # "n_corregido" or "n_original" (same rows, original n, for comparison)
+    CAMPAIGN = "main"          # "main" (corrected n) or "n_original" (same rows, original n, for comparison)
 
     # Path configuration
     BASE_RESULTS_DIR = str(DATA_OUTPUT)                         # Base directory for all results
