@@ -235,7 +235,7 @@ Final samples are selected using kernel density estimation (KDE) in dimensionles
 The first sampling drew `n` from 0.25–0.45. Those values are about ten times too high for a
 channel: they match the sheet-flow values of NRCS TR-55 (overland flow), not natural
 streams, for which `n ≈ 0.025–0.045` (Chow, 1959; Arcement & Schneider, 1989). The corrected
-input `data/input/inputs_n_corregido.csv` keeps the same 758 draws divided by 10 and stores the
+input `data/input/inputs_main.csv` keeps the same 758 draws divided by 10 and stores the
 original value in `n_original`. `inputs_n_original.csv` has the same rows with the original `n`,
 for comparison. Both are built from the master Excel by `simulations/build_input_csv.py`.
 

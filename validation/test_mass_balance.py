@@ -23,7 +23,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from parallel_modflow import DATA_INPUT, DEFAULT_EXE, run_single_simulation
 
-INPUT_CSV = DATA_INPUT / "inputs_n_corregido.csv"
+INPUT_CSV = DATA_INPUT / "inputs_main.csv"
 
 OUT_DIR = ROOT / "data" / "output" / "validation"
 RUNS = str(OUT_DIR / "runs")
@@ -111,12 +111,12 @@ def analyze():
         for scheme in SCHEMES:
             rate, _ = read_budget(scheme, sim_id)
             ax.plot(rate.index, rate['PERCENT_DISCREPANCY'], lw=1 if scheme != 'uniform_11k' else .6,
-                    color=COLORS[scheme], label=f"{scheme} ({len(rate)} pasos)")
-        ax.set_title(f"Fila {sim_id}"); ax.set_xlabel("Tiempo (días)")
+                    color=COLORS[scheme], label=f"{scheme} ({len(rate)} steps)")
+        ax.set_title(f"Row {sim_id}"); ax.set_xlabel("Time (days)")
         ax.legend(frameon=False, fontsize=6)
-    axes[0].set_ylabel("Discrepancia del balance en el paso (%)")
-    fig.suptitle("Error de balance de masas en cada paso de tiempo (.list)", y=1.03)
-    fig.tight_layout(); fig.savefig(f"{OUT}/figA_discrepancia_por_paso.png"); plt.close(fig)
+    axes[0].set_ylabel("Budget discrepancy in the step (%)")
+    fig.suptitle("Mass-balance error at every time step (.list)", y=1.03)
+    fig.tight_layout(); fig.savefig(f"{OUT}/figA_discrepancy_per_step.png"); plt.close(fig)
 
     # Fig B: rate series of each budget term (one row per term), first two weeks + full window inset
     for sim_id in IDS:
@@ -131,10 +131,10 @@ def analyze():
                             ls='-' if scheme == 'uniform_11k' else '--')
                 ax.set_title(f"{term}_{side}", fontsize=8); ax.set_ylabel("m³/s")
                 if k == len(TERMS) - 1:
-                    ax.set_xlabel("Tiempo (días)")
+                    ax.set_xlabel("Time (days)")
         axes[0, 0].legend(frameon=False, fontsize=6)
-        fig.suptitle(f"Fila {sim_id}: términos del balance (tasas) por esquema", y=1.01)
-        fig.tight_layout(); fig.savefig(f"{OUT}/figB_terminos_balance_{sim_id}.png"); plt.close(fig)
+        fig.suptitle(f"Row {sim_id}: budget terms (rates) by scheme", y=1.01)
+        fig.tight_layout(); fig.savefig(f"{OUT}/figB_budget_terms_{sim_id}.png"); plt.close(fig)
     print(f"\nFigures in {OUT}/")
 
 

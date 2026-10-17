@@ -47,7 +47,7 @@ if __name__ == "__main__":
         for fut in as_completed(futures):
             r = fut.result(); r["scheme"] = futures[fut]; results.append(r)
             print(f"{r['scheme']:7s} {r['simulation_id']}: {'OK' if r['success'] else r.get('error')} "
-                  f"({r['execution_time']/60:.1f} min, {r.get('nstp_total')} pasos)", flush=True)
+                  f"({r['execution_time']/60:.1f} min, {r.get('nstp_total')} steps)", flush=True)
     res = pd.DataFrame(results)
     res.to_csv(OUT / "test_reproduce_excel_results.csv", index=False)
 

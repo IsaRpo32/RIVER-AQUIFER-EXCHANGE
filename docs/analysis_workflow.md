@@ -4,13 +4,13 @@ From the input files to the tables and figures of the paper. Model details are i
 
 ## 1. Ensembles
 
-**Main ensemble (758 configurations)**, `data/input/inputs_n_corregido.csv`. Basin-dependent geometry from
+**Main ensemble (758 configurations)**, `data/input/inputs_main.csv`. Basin-dependent geometry from
 drainage area (Bieger et al., 2015; Flint, 1974; Williams, 1978); stochastic aquifer and streambed
 properties (Ka, Kr with Ka/Kr log-uniform in [10, 1000], Sy, nB, nD); three flood durations per
 drainage-area class (td = {0.7, 1.0, 1.3} × 0.6 Tc, Kirpich). Streambed conductance Criv = 10⁻⁴–0.2 m²/s;
 100–200 rows along the reach. A kernel-density subset in π₁–π₂–π₃ space gives the 758 configurations.
 Manning coefficients n = 0.025–0.045 (an earlier campaign with values ten times larger was discarded).
-The ensemble was run in two halves of 379 rows (`inputs_n_corregido_mitad_A.csv`, `..._mitad_B.csv`).
+The ensemble was run in two halves of 379 rows (`inputs_main_half_A.csv`, `inputs_main_half_B.csv`).
 
 **High-connectivity ensemble (300 configurations)**, `data/input/inputs_high_connectivity.csv`. Same base
 configurations (geometry, Sy, forcing, n); Kr and Ka reassigned for coarse-sand and gravel beds: Kr
@@ -92,7 +92,13 @@ t_L and π₁–π₄ by drainage-area class). `fig10_11_pi_space.py` also write
 (`fig10_deltaH_pi_space_2D`), not used in the paper. The files in `figures/output/` were produced on
 Windows with Arial; on a machine without Arial the same figures are drawn with DejaVu Sans.
 
-## 6. Paper tables and figures
+## 6. Supplementary data
+
+`data/supplementary/model_inputs.csv`, `model_results.csv` and `model_results_dictionary.csv` are the data files
+published with the paper (see the README). `model_results.csv` repeats the values of `data/output/metrics.csv`
+with descriptive column names and units.
+
+## 7. Paper tables and figures
 
 Numbering of manuscript v15.
 
