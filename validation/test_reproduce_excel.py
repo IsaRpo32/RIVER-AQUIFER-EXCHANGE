@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from parallel_modflow import DATA_INPUT, DEFAULT_EXE, run_single_simulation
+from parallel_modflow import DEFAULT_EXE, load_inputs, run_single_simulation
 
 # master Excel (not in the repository): python test_reproduce_excel.py path/to/Appendix_2_...xlsx
 EXCEL_PATH = sys.argv[1] if len(sys.argv) > 1 else "Appendix_2_sim_Master_sample_points_merge_20251013.xlsx"
@@ -38,7 +38,7 @@ COMPARE = {'Qexc_in': 'Qexc_in', 'Qexc_out': 'Qexc_out', 'T_retorno': 'T_out',
            'PERCENT_DISCREPANCY': 'PERCENT_DISCREPANCY'}
 
 if __name__ == "__main__":
-    dt = pd.read_csv(DATA_INPUT / "inputs_n_original.csv").set_index("IDMERGE", drop=False)
+    dt = load_inputs("main", original_n=True).set_index("IDMERGE", drop=False)
     jobs = [(s, (i, dt.loc[i], RUNS, f"reproduce_excel/{s}", DEFAULT_EXE,
                  {**COMMON, **f(dt.loc[i, "da_km2"])})) for s, f in SCHEMES.items() for i in IDS]
     results = []

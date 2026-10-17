@@ -9,9 +9,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from results_table import load_results
+
 ROOT = Path(__file__).resolve().parents[1]
 TABLES = ROOT / "data" / "output" / "tables"; TABLES.mkdir(parents=True, exist_ok=True)
-d = pd.read_csv(ROOT / "data" / "output" / "metrics.csv")
+d = load_results()
 PI = ["pi1", "pi2", "pi3", "pi4"]
 MET = ["delta_tp*", "delta_H*", "t_r*", "delta_leakage*", "delta_storage*"]
 rk = lambda s: s.rank()

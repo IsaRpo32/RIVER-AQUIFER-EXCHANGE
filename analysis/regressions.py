@@ -1,5 +1,5 @@
 """
-Log-log regressions on the 1,058 simulations (data/output/metrics.csv).
+Log-log regressions on the 1,058 simulations (data/output/model_results.csv).
 
 Predictive models: log10(Y*) = a0 + a1 log10(pi1) + ... + a4 log10(pi4)
     -> coefficients, 95 % CI (OLS), p-values, R2adj, 10-fold cross-validated R2.
@@ -19,9 +19,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from results_table import load_results
+
 ROOT = Path(__file__).resolve().parents[1]
 TABLES = ROOT / "data" / "output" / "tables"; TABLES.mkdir(parents=True, exist_ok=True)
-d = pd.read_csv(ROOT / "data" / "output" / "metrics.csv")
+d = load_results()
 MET = ["delta_tp*", "delta_H*", "t_r*", "delta_leakage*", "delta_storage*"]
 PI4, PI3 = ["pi1", "pi2", "pi3", "pi4"], ["pi1", "pi2", "pi3"]
 Z = 1.96

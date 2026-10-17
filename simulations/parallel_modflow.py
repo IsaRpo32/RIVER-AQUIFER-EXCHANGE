@@ -51,6 +51,23 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA_INPUT = ROOT / "data" / "input"
 DATA_OUTPUT = ROOT / "data" / "output"
 DEFAULT_EXE = str(ROOT / "executables" / ("MODFLOW-NWT.exe" if os.name == "nt" else "mfnwt"))
+INPUTS = DATA_INPUT / "model_inputs.csv"
+ENSEMBLES = ("main", "high_connectivity")
+
+
+def load_inputs(ensemble: str = "main", original_n: bool = False) -> pd.DataFrame:
+    """
+    Rows of data/input/model_inputs.csv for one ensemble ("main" or "high_connectivity").
+    The two ensembles share IDMERGE values, so they are always run separately.
+    original_n=True puts back the earlier Manning n (ten times larger), kept in n_original.
+    """
+    if ensemble not in ENSEMBLES:
+        raise ValueError(f"ensemble must be one of {ENSEMBLES}, not {ensemble!r}")
+    d = pd.read_csv(INPUTS)
+    d = d[d["ensemble"] == ensemble].reset_index(drop=True)
+    if original_n:
+        d["n"] = d["n_original"]
+    return d
 
 
 # Configure logging
@@ -707,7 +724,7 @@ def consolidate_results(results_list: List[Dict], original_dt: pd.DataFrame) -> 
     return dt_results
 
 def run_parallel_simulations(n_simulations: int = None, max_workers: int = None, cleanup_mode: str = 'essential',
-                             input_csv_path: str = str(DATA_INPUT / "inputs_main.csv"),
+                             input_csv_path: str = str(INPUTS),
                              base_results_dir: str = str(DATA_OUTPUT),
                              simulation_subdir: str = "simple_model",
                              modflow_exe_path: str = DEFAULT_EXE,
@@ -730,6 +747,9 @@ def run_parallel_simulations(n_simulations: int = None, max_workers: int = None,
     dt = pd.read_csv(input_csv_path, sep=None, engine="python", encoding="utf-8-sig")  # accepts ',' or ';'
     if "run" in dt.columns:                      # run = 0 skips a row
         dt = dt[dt["run"] == 1]
+    if "ensemble" in dt.columns and dt["ensemble"].nunique() > 1:
+        raise ValueError("The input mixes ensembles, whose IDMERGE values repeat: run one ensemble at a time "
+                         "(load_inputs() or simulations/run_campaign.py).")
     # simulation_id is positional (dt.iloc[i]); keep index aligned so results land on the right row
     dt = dt.reset_index(drop=True)
 
@@ -844,13 +864,16 @@ if __name__ == "__main__":
     MAX_WORKERS = 10         # Reduced from 16 to 4 for space management
     CLEANUP_MODE = 'none'  # 'essential', 'none', or 'full'
 
-    # Campaign: corrected Manning n (inputs built by build_input_csv.py from the master Excel)
-    CAMPAIGN = "main"          # "main" (corrected n) or "n_original" (same rows, original n, for comparison)
+    # Ensemble to run (rows of data/input/model_inputs.csv); simulations/run_campaign.py does the same, resumable
+    ENSEMBLE = "main"          # "main" or "high_connectivity"
+    ORIGINAL_N = False         # True: earlier Manning n (n_original), for comparison
 
     # Path configuration
-    BASE_RESULTS_DIR = str(DATA_OUTPUT)                         # Base directory for all results
-    SIMULATION_SUBDIR = CAMPAIGN                                # Subdirectory within results
-    INPUT_CSV_PATH = str(DATA_INPUT / f"inputs_{CAMPAIGN}.csv")  # Path to input CSV file
+    BASE_RESULTS_DIR = str(DATA_OUTPUT)                                       # Base directory for all results
+    SIMULATION_SUBDIR = ENSEMBLE + ("_n_original" if ORIGINAL_N else "")      # Subdirectory within results
+    INPUT_CSV_PATH = Path(BASE_RESULTS_DIR) / SIMULATION_SUBDIR / "_inputs.csv"
+    INPUT_CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
+    load_inputs(ENSEMBLE, ORIGINAL_N).to_csv(INPUT_CSV_PATH, index=False)
     MODFLOW_EXE_PATH = DEFAULT_EXE                              # Path to MODFLOW executable
     # Time-step scheme validated in test_time_steps.py / test_mass_balance.py ('fine'); no .cbc files
     TIME_CFG = {'n_hyd': 400, 'tsmult': 1.05, 'dt_max_hours': 3.0, 'save_cbc': False}
@@ -870,7 +893,7 @@ if __name__ == "__main__":
             n_simulations=N_SIMULATIONS,
             max_workers=MAX_WORKERS,
             cleanup_mode=CLEANUP_MODE,
-            input_csv_path=INPUT_CSV_PATH,
+            input_csv_path=str(INPUT_CSV_PATH),
             base_results_dir=BASE_RESULTS_DIR,
             simulation_subdir=SIMULATION_SUBDIR,
             modflow_exe_path=MODFLOW_EXE_PATH,

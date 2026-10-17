@@ -89,11 +89,15 @@ tmp/
 *.log
 *.bak
 
+# Generated input copies (simulations/build_*_inputs.py)
+data/input/*_rebuilt.csv
+
 # Outputs: keep the results used in the paper; ignore new runs (data/output/<name>/, zips) and validation runs
 data/output/*
 !data/output/.gitkeep
-!data/output/campaign/
-!data/output/metrics.csv
+!data/output/simulation_results.csv
+!data/output/model_results.csv
+!data/output/model_results_dictionary.csv
 !data/output/tables/
 !data/output/robustness/
 

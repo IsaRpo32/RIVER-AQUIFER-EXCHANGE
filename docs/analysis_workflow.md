@@ -4,27 +4,30 @@ From the input files to the tables and figures of the paper. Model details are i
 
 ## 1. Ensembles
 
-**Main ensemble (758 configurations)**, `data/input/inputs_main.csv`. Basin-dependent geometry from
+The inputs of both ensembles are in `data/input/model_inputs.csv`, told apart by the column `ensemble`.
+
+**Main ensemble (758 configurations)**, `ensemble = main`. Basin-dependent geometry from
 drainage area (Bieger et al., 2015; Flint, 1974; Williams, 1978); stochastic aquifer and streambed
 properties (Ka, Kr with Ka/Kr log-uniform in [10, 1000], Sy, nB, nD); three flood durations per
 drainage-area class (td = {0.7, 1.0, 1.3} × 0.6 Tc, Kirpich). Streambed conductance Criv = 10⁻⁴–0.2 m²/s;
 100–200 rows along the reach. A kernel-density subset in π₁–π₂–π₃ space gives the 758 configurations.
 Manning coefficients n = 0.025–0.045 (an earlier campaign with values ten times larger was discarded).
-The ensemble was run in two halves of 379 rows (`inputs_main_half_A.csv`, `inputs_main_half_B.csv`).
+The earlier values are kept in the column `n_original`. Rebuilt from the master Excel by
+`simulations/build_input_csv.py`. The ensemble was run in two halves of 379 rows.
 
-**High-connectivity ensemble (300 configurations)**, `data/input/inputs_high_connectivity.csv`. Same base
+**High-connectivity ensemble (300 configurations)**, `ensemble = high_connectivity`. Same base
 configurations (geometry, Sy, forcing, n); Kr and Ka reassigned for coarse-sand and gravel beds: Kr
 log-uniform in [10⁻⁴, 10⁻²/r], r = Ka/Kr log-uniform in [1, 10], Ka ≤ 10⁻² m/s, Criv recomputed with the
 same Δx. Configurations with Kr > 10⁻³ m/s (clean gravel) are excluded and 100 configurations are drawn
-per drainage-area class (seed 20261012). Criv = 0.2–30 m²/s. Built by
-`simulations/build_high_connectivity_inputs.py`.
+per drainage-area class (seed 20261012). Criv = 0.2–30 m²/s. Rebuilt by
+`simulations/build_high_connectivity_inputs.py`; the original Kr and Ka are kept in `Kr_old`, `Ka_old`.
 
 The `IDMERGE` of a high-connectivity row is that of the main row it comes from, so `IDMERGE` alone is not
 a unique key: use (`ensemble`, `IDMERGE`).
 
 ## 2. Simulations
 
-`simulations/run_campaign.py <input CSV> [workers]` runs `simulations/parallel_modflow.py` on every row
+`simulations/run_campaign.py <ensemble> [workers]` runs `simulations/parallel_modflow.py` on every row of the ensemble
 (MODFLOW-NWT + SFR2), resumable, with the validated time-step scheme. Main features of the model:
 
 - four layers (lowest inactive), 65 columns across B (channel in the central column), 100–200 rows along L;
@@ -38,32 +41,36 @@ a unique key: use (`ensemble`, `IDMERGE`).
 - exported per run: peak times and stages at inlet and outlet, return time, cumulative budget terms
   (STORAGE, STREAM LEAKAGE, HEAD DEP BOUNDS) and mass-balance discrepancy.
 
-The results used in the paper are in `data/output/campaign/`:
+The results used in the paper are in `data/output/simulation_results.csv` (one row per run, same order as
+`model_inputs.csv`). It joins three result files, kept unchanged:
 
-| File | Ensemble | Original name |
+| Rows | Ensemble | Original name |
 |---|---|---|
-| `main_half_A.csv` | main ensemble, half A (379) | `complete_sample_points_parallel_20261011_230012.csv` |
-| `main_half_B.csv` | main ensemble, half B (379) | `complete_sample_points_parallel_20261011_185710.csv` |
-| `high_connectivity.csv` | high-connectivity ensemble (300) | `complete_sample_points_parallel_20261012_134235.csv` |
+| 1–379 | main ensemble, half A | `complete_sample_points_parallel_20261011_230012.csv` |
+| 380–758 | main ensemble, half B | `complete_sample_points_parallel_20261011_185710.csv` |
+| 759–1,058 | high-connectivity ensemble | `complete_sample_points_parallel_20261012_134235.csv` |
 
 All 1,058 runs finished (`success = True`). Half A was run on Linux and half B on Windows with the same
-script; both executables give the same results within 0.00004 %. To use a new run, copy the `results.csv`
-that `run_campaign.py` writes in `data/output/<input name>/` over the corresponding file above.
+script; both executables give the same results within 0.00004 %. To use a new run, replace the rows of that
+ensemble in `simulation_results.csv` with the `results.csv` that `run_campaign.py` writes in
+`data/output/<ensemble>/`.
 
 Validation of the numerical model (time step, mass balance, GHB, duration, reproduction of the master
 Excel) is in `validation/`.
 
 ## 3. Post-processing (`analysis/postprocess_metrics.py`)
 
-Reads the three result files and writes `data/output/metrics.csv` (1,058 rows):
+Reads `data/output/simulation_results.csv` and writes `data/output/model_results.csv` (1,058 rows; columns
+described in `model_results_dictionary.csv`). The scripts in `analysis/` and `figures/` read it through
+`analysis/results_table.py`, which gives the short names used in the code. It contains:
 
 - t_c = Sy B² / (Ka d_bkf); V_bkf = d_bkf^⅔ S^½ / n; t_L = L / (5/3 V_bkf);
 - π₁ = t_c Kr / dr; π₂ = Wbkf / (Sy B); π₃ = V_bkf t_c / B; π₄ = t_c / td;
 - Δtₚ* = Δtₚ / t_L; ΔH* = ΔH / d_bkf; ΔLeakage* = (LEAKAGE_IN − LEAKAGE_OUT) / (B L d_bkf); tᵣ* = tᵣ / t_L;
   ΔStorage* = (STORAGE_OUT − STORAGE_IN) / (B L d_bkf);
-- `ensemble`, `group` (`main` / `high_connectivity`) and `area_class` (nearest of 10³, 10⁴, 10⁵ km² in log).
+- `ensemble` (`main` / `high_connectivity`) and `area_class_km2` (nearest of 10³, 10⁴, 10⁵ km² in log).
 
-Columns `delta_tp*_tc` and `t_r*_tc` keep the earlier normalization by t_c for comparison only.
+The earlier normalization of Δtₚ and tᵣ by t_c is computed only in `time_scale_test.py`, for comparison.
 
 **Choice of t_L.** t_c enters π₁, π₃ and π₄. With Δtₚ permuted at random among the simulations, Δtₚ/t_c
 still gives R² = 0.87 against π₁–π₃ (0.84 for tᵣ), against 0.07 with t_L (0.05 for tᵣ)
@@ -94,9 +101,8 @@ Windows with Arial; on a machine without Arial the same figures are drawn with D
 
 ## 6. Supplementary data
 
-`data/supplementary/model_inputs.csv`, `model_results.csv` and `model_results_dictionary.csv` are the data files
-published with the paper (see the README). `model_results.csv` repeats the values of `data/output/metrics.csv`
-with descriptive column names and units.
+`data/input/model_inputs.csv`, `data/output/model_results.csv` and `data/output/model_results_dictionary.csv`
+are the data files published with the paper (see the README).
 
 ## 7. Paper tables and figures
 
