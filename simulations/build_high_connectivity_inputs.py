@@ -1,7 +1,7 @@
 """
-Build the input CSV of the high-connectivity ensemble (300 configurations) from the main ensemble.
+Rebuild the inputs of the high-connectivity ensemble (300 configurations) from the main ensemble.
 
-The main ensemble (data/input/inputs_main.csv, 758 rows) has low streambed conductances
+The main ensemble (rows 'main' of data/input/model_inputs.csv, 758 rows) has low streambed conductances
 (C_riv = 1e-4 to 0.2 m2/s). The high-connectivity ensemble keeps the geometry, Sy, forcing and
 Manning n of those rows and reassigns Kr and Ka for coarse-sand and gravel beds:
 
@@ -15,13 +15,12 @@ the master Excel: rows sorted by Kr (ties by IDMERGE), with Kr, Ka and S rounded
 figures. This script does the same, so the simulated configurations carry S with 3 significant figures
 (relative change <= 3e-4). The original Kr and Ka are kept in Kr_old and Ka_old.
 
-The file that was simulated is data/input/inputs_high_connectivity.csv. This script writes
-inputs_high_connectivity_rebuilt.csv next to it and compares both: same 300 rows in the same order,
-identical Kr, Ka, S and Ka_Kr, and the other model inputs within 2e-8 (digits kept by Excel). Only the
+The simulated configurations are the rows 'high_connectivity' of data/input/model_inputs.csv. This script
+writes high_connectivity_inputs_rebuilt.csv next to it and compares both: same 300 rows, identical Kr, Ka, S and Ka_Kr, and the other model inputs within 2e-8 (digits kept by Excel). Only the
 informative column Ka_old differs more, for the same reason.
 
 The IDMERGE values are those of the main ensemble rows the configurations come from: they are NOT unique
-across the two ensembles. Use (ensemble, IDMERGE) as the key when combining results.
+across the two ensembles. Use (ensemble, IDMERGE) as the key.
 
 Usage:
     python simulations/build_high_connectivity_inputs.py
@@ -63,8 +62,13 @@ def sample_per_class(d: pd.DataFrame) -> pd.DataFrame:
     return m.sort_values("C", ascending=False).reset_index(drop=True)
 
 
-def build(main_csv: Path = DATA_INPUT / "inputs_main.csv") -> pd.DataFrame:
-    d = pd.read_csv(main_csv)
+def model_inputs(ensemble: str) -> pd.DataFrame:
+    d = pd.read_csv(DATA_INPUT / "model_inputs.csv")
+    return d[d.ensemble == ensemble].drop(columns="ensemble").reset_index(drop=True)
+
+
+def build() -> pd.DataFrame:
+    d = model_inputs("main").drop(columns=["Kr_old", "Ka_old", "Ka_Kr"])
     d = d.sort_values(["Kr", "IDMERGE"], kind="mergesort").reset_index(drop=True)
     for col in ("Kr", "Ka", "S"):
         d[col] = round_sig(d[col])
@@ -80,16 +84,17 @@ def build(main_csv: Path = DATA_INPUT / "inputs_main.csv") -> pd.DataFrame:
 
 if __name__ == "__main__":
     m = build()
-    out = DATA_INPUT / "inputs_high_connectivity_rebuilt.csv"
+    out = DATA_INPUT / "high_connectivity_inputs_rebuilt.csv"
     m.to_csv(out, index=False)
     print(f"{len(m)} rows written to {out}")
     print(m.groupby("da_km2").size().to_string())
     for c in ["Kr", "Ka", "C"]:
         print(f"{c}: min {m[c].min():.3g}  median {m[c].median():.3g}  max {m[c].max():.3g}")
 
-    simulated = pd.read_csv(DATA_INPUT / "inputs_high_connectivity.csv")
-    same_rows = (m.IDMERGE.to_numpy() == simulated.IDMERGE.to_numpy()).all()
+    simulated = model_inputs("high_connectivity").set_index("IDMERGE")
+    same_rows = set(m.IDMERGE) == set(simulated.index)
+    m = m.set_index("IDMERGE").loc[simulated.index]
     num = simulated.select_dtypes("number").columns.drop(["Ka_old"])
     rel = ((m[num] - simulated[num]).abs() / simulated[num].abs().replace(0, 1)).max()
-    print(f"\nAgainst the simulated file: same rows and order: {same_rows}; "
+    print(f"\nAgainst the simulated configurations: same rows: {same_rows}; "
           f"max relative difference {rel.max():.1e} ({rel.idxmax()}); Kr, Ka, S: {rel[['Kr', 'Ka', 'S']].max():.1e}")

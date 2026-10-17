@@ -235,14 +235,14 @@ Final samples are selected using kernel density estimation (KDE) in dimensionles
 The first sampling drew `n` from 0.25–0.45. Those values are about ten times too high for a
 channel: they match the sheet-flow values of NRCS TR-55 (overland flow), not natural
 streams, for which `n ≈ 0.025–0.045` (Chow, 1959; Arcement & Schneider, 1989). The corrected
-input `data/input/inputs_main.csv` keeps the same 758 draws divided by 10 and stores the
-original value in `n_original`. `inputs_n_original.csv` has the same rows with the original `n`,
-for comparison. Both are built from the master Excel by `simulations/build_input_csv.py`.
+inputs (rows `main` of `data/input/model_inputs.csv`) keep the same 758 draws divided by 10 and store the
+original value in `n_original`, so the earlier campaign can be run for comparison
+(`run_campaign.py main_n_original`). They are rebuilt from the master Excel by `simulations/build_input_csv.py`.
 
 ### 5.5 High-Connectivity Ensemble
 
 The main ensemble has low streambed conductances (`C_riv` = 10⁻⁴ – 0.2 m²/s). A second ensemble of 300
-configurations (`data/input/inputs_high_connectivity.csv`) keeps the geometry, `S_y`, forcing and `n`
+configurations (rows `high_connectivity` of `data/input/model_inputs.csv`) keeps the geometry, `S_y`, forcing and `n`
 of the main configurations and reassigns `K_r` and `K_a` for coarse-sand and gravel beds: `K_a/K_r`
 log-uniform in [1, 10], `K_r` log-uniform in [10⁻⁴, 10⁻²·K_r/K_a] m/s; rows with `K_r > 10⁻³ m/s`
 (clean gravel) are dropped and 100 configurations are drawn per drainage-area class. This gives
@@ -268,8 +268,8 @@ measured from the start of the transient period.
 `t_c`. Because `t_c` also enters π₁, π₃ and π₄, that normalization creates correlation by itself: with
 `Δt_p` shuffled at random among the simulations, `Δt_p/t_c` still gives R² = 0.87 against π₁–π₃ (0.84
 for `t_r`), against 0.07 with `t_L` (0.05 for `t_r`) (`analysis/time_scale_test.py`; Kenney, 1982).
-Since manuscript v15 both are scaled with the kinematic travel time `t_L`; the `t_c` versions are kept in
-`metrics.csv` as `delta_tp*_tc` and `t_r*_tc`. `ΔH*`, `ΔLeakage*` and `ΔStorage*` do not show this
+Since manuscript v15 both are scaled with the kinematic travel time `t_L`; the `t_c` versions are computed
+only in `time_scale_test.py`. `ΔH*`, `ΔLeakage*` and `ΔStorage*` do not show this
 problem (`analysis/other_scales_test.py`). Note that `Δt_p` is close to `t_L` itself (`Δt_p*` ≈ 1–3), so
 the peak delay mostly reflects the travel time of the wave along the reach.
 

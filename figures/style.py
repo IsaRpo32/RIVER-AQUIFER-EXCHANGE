@@ -4,6 +4,7 @@ Common style of the paper figures. Every figure script imports this module.
 Double column 174 mm / single column 84 mm; sans-serif font (Arial, falling back to DejaVu Sans); thin
 ticks; faint grid; data in a single grey; text always in neutral ink; vector output (PDF) plus PNG at 600 dpi.
 """
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -13,7 +14,9 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import LogLocator, NullFormatter
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data" / "output" / "metrics.csv"
+sys.path.insert(0, str(ROOT / "analysis"))
+from results_table import load_results  # noqa: E402
+
 TABLES = ROOT / "data" / "output" / "tables"
 OUTPUT = Path(__file__).resolve().parent / "output"
 
@@ -56,10 +59,7 @@ def apply():
 
 
 def load():
-    d = pd.read_csv(DATA)
-    # "1e3" etc. are read back as numbers
-    d["area_class"] = d["area_class"].map({1000.0: "1e3", 10000.0: "1e4", 100000.0: "1e5"}).fillna(d["area_class"].astype(str))
-    return d
+    return load_results()
 
 
 def data_for(d, variables):

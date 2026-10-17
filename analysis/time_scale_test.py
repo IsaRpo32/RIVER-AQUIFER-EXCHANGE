@@ -16,9 +16,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from results_table import load_results
+
 ROOT = Path(__file__).resolve().parents[1]
 rng = np.random.default_rng(1)
-d = pd.read_csv(ROOT / "data" / "output" / "metrics.csv")
+d = load_results()
 V = d.d_bkf ** (2 / 3) * d.S ** 0.5 / d.n               # Manning velocity at bankfull
 d["tL"] = d.L / (5 / 3 * V)
 d["tp_s"] = d.td_s / 2

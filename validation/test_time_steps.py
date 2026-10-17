@@ -18,9 +18,8 @@ import numpy as np
 import pandas as pd
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from parallel_modflow import DATA_INPUT, DEFAULT_EXE, run_single_simulation
+from parallel_modflow import DEFAULT_EXE, load_inputs, run_single_simulation
 
-INPUT_CSV = DATA_INPUT / "inputs_main.csv"
 MODFLOW_EXE = DEFAULT_EXE
 
 OUT = ROOT / "data" / "output" / "validation"
@@ -56,7 +55,7 @@ def pick_rows(dt: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    rows = pick_rows(pd.read_csv(INPUT_CSV))
+    rows = pick_rows(load_inputs("main"))
     print(f"Testing IDMERGE {rows['IDMERGE'].tolist()} with schemes {list(SCHEMES)}")
 
     jobs = []

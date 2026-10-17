@@ -1,13 +1,15 @@
 """
-Build the input CSVs for parallel_modflow.py from the master Excel
-(Appendix_2_sim_Master_sample_points_merge_20251013.xlsx, sheet 'sim_outputs').
+Rebuild the inputs of the main ensemble (758 configurations) from the master Excel
+(Appendix_2_sim_Master_sample_points_merge_20251013.xlsx, sheet 'sim_outputs'; not in the repository).
 
 - Keeps only the input columns the model reads (+ IDMERGE / date for traceability).
 - Fills the missing 'nrow' (campaigns 10092025 and 30082025) with L / dx, dx = C*dr/(Kr*w_bkf).
 - Sets run = 1 so every row is run.
-- Writes two versions: original Manning n and n/10 (corrected range 0.025-0.045).
-  The master Excel has n = 0.25-0.45, ten times a realistic channel value; the corrected
-  file keeps the same draws divided by 10 and the original value in 'n_original'.
+- Divides Manning n by 10 (corrected range 0.025-0.045) and keeps the original value in 'n_original':
+  the master Excel has n = 0.25-0.45, ten times a realistic channel value.
+
+Writes data/input/main_inputs_rebuilt.csv and compares it with the 'main' rows of
+data/input/model_inputs.csv, the inputs that were simulated.
 
 Usage:
     python build_input_csv.py path/to/Appendix_2_sim_Master_sample_points_merge_20251013.xlsx
@@ -34,13 +36,19 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit(__doc__)
     dt = build_inputs(sys.argv[1])
-    DATA_INPUT.mkdir(parents=True, exist_ok=True)
-    dt.to_csv(DATA_INPUT / "inputs_n_original.csv", index=False)
+    dt["n_original"] = dt["n"]
+    dt["n"] = dt["n"] / 10
+    dt.insert(1, "ensemble", "main")
+    out = DATA_INPUT / "main_inputs_rebuilt.csv"
+    dt.to_csv(out, index=False)
+    print(f"{len(dt)} rows written to {out}")
+    print(f"n corrected range: {dt['n'].min():.4f} - {dt['n'].max():.4f}")
 
-    dt_corr = dt.copy()
-    dt_corr["n_original"] = dt_corr["n"]
-    dt_corr["n"] = dt_corr["n"] / 10
-    dt_corr.to_csv(DATA_INPUT / "inputs_main.csv", index=False)
-
-    print(f"{len(dt)} rows written to {DATA_INPUT}/inputs_n_original.csv and inputs_main.csv")
-    print(f"n corrected range: {dt_corr['n'].min():.4f} - {dt_corr['n'].max():.4f}")
+    # compare with the main-ensemble rows that were simulated
+    sim = pd.read_csv(DATA_INPUT / "model_inputs.csv")
+    sim = sim[sim.ensemble == "main"].set_index("IDMERGE")
+    new = dt.set_index("IDMERGE").reindex(sim.index)
+    num = [c for c in new.select_dtypes("number").columns if c in sim]
+    rel = ((new[num] - sim[num]).abs() / sim[num].abs().replace(0, 1)).max()
+    print(f"Against data/input/model_inputs.csv: same rows {set(dt.IDMERGE) == set(sim.index)}; "
+          f"max relative difference {rel.max():.1e} ({rel.idxmax()})")

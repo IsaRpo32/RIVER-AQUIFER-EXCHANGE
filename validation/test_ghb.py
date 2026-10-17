@@ -12,9 +12,8 @@ sys.path.insert(0, str(ROOT / "simulations"))
 import pandas as pd
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from parallel_modflow import DATA_INPUT, DEFAULT_EXE, run_single_simulation
+from parallel_modflow import DEFAULT_EXE, load_inputs, run_single_simulation
 
-INPUT_CSV = DATA_INPUT / "inputs_main.csv"
 
 OUT = ROOT / "data" / "output" / "validation"
 RUNS = str(OUT / "runs")
@@ -27,7 +26,7 @@ METRICS = ['Qexc_in', 'Qexc_out', 'T_in', 'T_out', 't_r', 'delta_tp', 'delta_H',
            'STREAM_LEAKAGE_IN', 'STREAM_LEAKAGE_OUT', 'PERCENT_DISCREPANCY']
 
 if __name__ == "__main__":
-    dt = pd.read_csv(INPUT_CSV).set_index("IDMERGE", drop=False)
+    dt = load_inputs("main").set_index("IDMERGE", drop=False)
     jobs = [(f, (i, dt.loc[i], RUNS, f"ghb_test/x{f:g}", DEFAULT_EXE,
                  {**FINE, 'ghb_cond_factor': f})) for f in FACTORS for i in IDS]
     results = []

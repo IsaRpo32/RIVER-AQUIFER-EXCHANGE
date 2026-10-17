@@ -1,11 +1,11 @@
 """
 Run a campaign (or one part of it) on any machine, resumable, and pack the results to send back.
 
-    python simulations/run_campaign.py inputs_main_half_A.csv             # one half of the main ensemble
-    python simulations/run_campaign.py inputs_main_half_B.csv 8           # the other half, 8 parallel simulations
-    python simulations/run_campaign.py inputs_high_connectivity.csv 8     # the high-connectivity ensemble
+    python simulations/run_campaign.py main 8                 # main ensemble (758), 8 parallel simulations
+    python simulations/run_campaign.py high_connectivity 8    # high-connectivity ensemble (300)
+    python simulations/run_campaign.py main_n_original 8      # main ensemble with the earlier Manning n
 
-The CSV is read from ../data/input/. Rows already finished (data/output/<name>/rows_done.jsonl) are
+The rows come from data/input/model_inputs.csv. Rows already finished (data/output/<name>/rows_done.jsonl) are
 skipped, so the run can be stopped and started again. At the end it writes
 data/output/<name>/results.csv with every finished row (the file the analysis uses), and in data/output/:
     results_<name>.zip             small: results CSV and rows_done.jsonl (all metrics and budget terms)
@@ -19,12 +19,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from parallel_modflow import DATA_INPUT, DATA_OUTPUT, DEFAULT_EXE, consolidate_results, run_parallel_simulations
+from parallel_modflow import DATA_OUTPUT, DEFAULT_EXE, consolidate_results, load_inputs, run_parallel_simulations
 
-INPUT_NAME = sys.argv[1] if len(sys.argv) > 1 else "inputs_main.csv"
+NAME = sys.argv[1] if len(sys.argv) > 1 else "main"
 WORKERS = int(sys.argv[2]) if len(sys.argv) > 2 else max(1, mp.cpu_count() - 2)
-NAME = Path(INPUT_NAME).stem
-NAME = NAME[len("inputs_"):] if NAME.startswith("inputs_") else NAME
+ORIGINAL_N = NAME.endswith("_n_original")
+ENSEMBLE = NAME[:-len("_n_original")] if ORIGINAL_N else NAME
 # Time-step scheme validated in validation/test_time_steps.py and test_mass_balance.py ('fine'); no .cbc / .hds
 TIME_CFG = {'n_hyd': 400, 'tsmult': 1.05, 'dt_max_hours': 3.0, 'save_cbc': False}
 
@@ -70,7 +70,7 @@ def pack(out_dir: Path):
 
 if __name__ == "__main__":
     out_dir = DATA_OUTPUT / NAME
-    rows = pd.read_csv(DATA_INPUT / INPUT_NAME)
+    rows = load_inputs(ENSEMBLE, ORIGINAL_N)
     done = finished_ids(out_dir)
     todo = rows[~rows["IDMERGE"].isin(done)]
     print(f"{NAME}: {len(rows)} rows, {len(done)} already finished, {len(todo)} to run, {WORKERS} in parallel")

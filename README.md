@@ -30,7 +30,7 @@ RIVER-AQUIFER-EXCHANGE/
 │   ├── build_input_csv.py               main-ensemble inputs from the master Excel
 │   ├── build_high_connectivity_inputs.py  high-connectivity ensemble from the main one
 │   ├── parallel_modflow.py              the model: one MODFLOW-NWT + SFR2 run per row, in parallel
-│   ├── run_campaign.py                  resumable run of an input CSV
+│   ├── run_campaign.py                  resumable run of one ensemble
 │   └── sfr_series_utils.py              time vector and reach series of a finished run
 │
 ├── validation/                   tests of the numerical model (time step, mass balance, GHB, duration)
@@ -38,13 +38,14 @@ RIVER-AQUIFER-EXCHANGE/
 ├── figures/                      figure scripts and their output (PDF, PNG 600 dpi, SVG)
 │
 ├── data/
-│   ├── input/                    input CSVs of both ensembles
-│   ├── output/
-│   │   ├── campaign/             results of the 1,058 simulations
-│   │   ├── metrics.csv           π-groups and dimensionless metrics (post-processing)
-│   │   ├── tables/               paper tables
-│   │   └── robustness/           bootstrap and subsampling results
-│   └── supplementary/            inputs and results of the 1,058 simulations, as published with the paper
+│   ├── input/
+│   │   └── model_inputs.csv      model inputs of the 1,058 configurations (both ensembles)
+│   └── output/
+│       ├── simulation_results.csv      raw results of the 1,058 simulations
+│       ├── model_results.csv           results table: scales, π-groups and metrics (post-processing)
+│       ├── model_results_dictionary.csv  symbol, description and units of each column of model_results.csv
+│       ├── tables/               paper tables
+│       └── robustness/           bootstrap and subsampling results
 │
 ├── docs/
 │   ├── methodology.md            model, sampling and metric definitions
@@ -81,8 +82,8 @@ Every script can be run from any directory; the commands below assume the reposi
 python analysis/postprocess_metrics.py
 ```
 
-Reads `data/output/campaign/*.csv` and writes `data/output/metrics.csv` (1,058 rows): characteristic scales,
-π-groups and the five metrics.
+Reads `data/output/simulation_results.csv` and writes `data/output/model_results.csv` (1,058 rows): inputs,
+results, characteristic scales, π-groups and the five metrics.
 
 **2. Statistics**
 
@@ -114,46 +115,47 @@ Which script produces each table and figure of the manuscript: `docs/analysis_wo
 **4. Simulations** (optional; hours to days depending on the machine)
 
 ```bash
-python simulations/run_campaign.py inputs_main_half_A.csv 8              # main ensemble, half A, 8 in parallel
-python simulations/run_campaign.py inputs_main_half_B.csv 8              # main ensemble, half B
-python simulations/run_campaign.py inputs_high_connectivity.csv 8        # high-connectivity ensemble
+python simulations/run_campaign.py main 8                 # main ensemble, 8 in parallel
+python simulations/run_campaign.py high_connectivity 8    # high-connectivity ensemble
 ```
 
-Each call reads the CSV from `data/input/`, skips the rows already finished (so it can be stopped and run again)
-and writes `data/output/<name>/results.csv` with every finished row, plus a zip to send the results. Copy
-`results.csv` over the corresponding file in `data/output/campaign/` and go back to step 1.
+Each call takes the rows of that ensemble from `data/input/model_inputs.csv`, skips the rows already finished (so
+it can be stopped and run again) and writes `data/output/<name>/results.csv` with every finished row, plus a zip to
+send the results. Put those rows in `data/output/simulation_results.csv` (same columns, with the `ensemble`
+column) and go back to step 1.
 
 ---
 
 ## Ensembles
 
-| Ensemble | Input | Results | Configurations |
-|---|---|---|---|
-| Main | `data/input/inputs_main.csv` (run as halves `_half_A`, `_half_B`) | `campaign/main_half_A.csv`, `main_half_B.csv` | 758 |
-| High connectivity | `data/input/inputs_high_connectivity.csv` | `campaign/high_connectivity.csv` | 300 |
+Every data file holds both ensembles, told apart by the `ensemble` column:
 
-Manning coefficients are n = 0.025–0.045 (Chow, 1959); `inputs_n_original.csv` keeps the earlier values, ten times
-larger, for comparison. The high-connectivity ensemble reuses the main configurations with Kr and Ka of
+| `ensemble` | Configurations |
+|---|---|
+| `main` | 758 |
+| `high_connectivity` | 300 |
+
+Manning coefficients are n = 0.025–0.045 (Chow, 1959); the column `n_original` keeps the earlier values, ten
+times larger (`run_campaign.py main_n_original` runs the main ensemble with them). The high-connectivity ensemble reuses the main configurations with Kr and Ka of
 coarse-sand and gravel beds (C_riv up to 30 m²/s). Its `IDMERGE` values repeat those of the main ensemble, so
-results are keyed by (`ensemble`, `IDMERGE`). The raw SFR2 and listing files of the runs (several GB) are not
+rows are keyed by (`ensemble`, `IDMERGE`). The main ensemble was run in two halves of 379 rows; the results
+file joins them. The raw SFR2 and listing files of the runs (several GB) are not
 included.
 
 ---
 
 ## Supplementary data
 
-`data/supplementary/` holds the data files published as supplementary material of the paper, in one place and
-with self-explanatory column names:
+The data files published as supplementary material of the paper are:
 
 | File | Content |
 |---|---|
-| `model_inputs.csv` | model inputs of the 1,058 configurations (main ensemble, then high-connectivity ensemble), in the column names the model reads (`simulations/parallel_modflow.py`) |
-| `model_results.csv` | inputs, results, characteristic scales, π-groups and dimensionless metrics of the 1,058 simulations, one row per simulation, in the same order as `model_inputs.csv` |
-| `model_results_dictionary.csv` | symbol, description and units of every column of `model_results.csv` |
+| `data/input/model_inputs.csv` | model inputs of the 1,058 configurations, in the column names the model reads (`simulations/parallel_modflow.py`) |
+| `data/output/model_results.csv` | inputs, results, characteristic scales, π-groups and dimensionless metrics of the 1,058 simulations, one row per simulation, with self-explanatory column names |
+| `data/output/model_results_dictionary.csv` | symbol, description and units of every column of `model_results.csv` |
 
-`model_results.csv` holds the same values as `data/output/metrics.csv`. Rows are keyed by (`ensemble`, `config_id`);
-`config_id` is the `IDMERGE` of the other files. In `model_inputs.csv`, the high-connectivity rows are those with
-`Kr_old` filled in.
+The three files have the same rows in the same order. In `model_results.csv` the key is (`ensemble`,
+`config_id`); `config_id` is the `IDMERGE` of the other files.
 
 ---
 

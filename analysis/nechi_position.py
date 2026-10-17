@@ -18,9 +18,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from results_table import load_results
+
 ROOT = Path(__file__).resolve().parents[1]
 TABLES = ROOT / "data" / "output" / "tables"; TABLES.mkdir(parents=True, exist_ok=True)
-d = pd.read_csv(ROOT / "data" / "output" / "metrics.csv")
+d = load_results()
 tp = pd.read_csv(TABLES / "predictive_models_pi1_pi4.csv")
 N = dict(B=4000.0, d_bkf=3.66, S=1.5e-4, n=0.04, Ka=1.2e-3, Kr=1e-6, Sy=0.25, td_s=7 * 86400.0, L=50000.0,
          w_bkf=200.0, dr=1.25)

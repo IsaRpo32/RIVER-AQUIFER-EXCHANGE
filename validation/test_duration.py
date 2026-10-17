@@ -19,10 +19,9 @@ import pandas as pd
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from flopy.utils.sfroutputfile import SfrFile
 
-from parallel_modflow import DATA_INPUT, DEFAULT_EXE, run_single_simulation
+from parallel_modflow import DEFAULT_EXE, load_inputs, run_single_simulation
 from sfr_series_utils import recompute_times
 
-INPUT_CSV = DATA_INPUT / "inputs_main.csv"
 
 OUT = ROOT / "data" / "output" / "validation"
 RUNS = str(OUT / "runs")
@@ -46,7 +45,7 @@ def settle_time(T, q, frac):
 
 
 def analyze():
-    dt = pd.read_csv(INPUT_CSV).set_index("IDMERGE", drop=False)
+    dt = load_inputs("main").set_index("IDMERGE", drop=False)
     res = pd.read_csv(OUT / "test_duration_results.csv").set_index("simulation_id")
     rows = []
     for sim_id in IDS:
@@ -71,7 +70,7 @@ def analyze():
 
 
 def run():
-    dt = pd.read_csv(INPUT_CSV).set_index("IDMERGE", drop=False)
+    dt = load_inputs("main").set_index("IDMERGE", drop=False)
     jobs = [(i, dt.loc[i], RUNS, SUBDIR, DEFAULT_EXE, CFG) for i in IDS]
     with ProcessPoolExecutor(max_workers=len(jobs)) as ex:
         results = [f.result() for f in as_completed([ex.submit(run_single_simulation, j) for j in jobs])]

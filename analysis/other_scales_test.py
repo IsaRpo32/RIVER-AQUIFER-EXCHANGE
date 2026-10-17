@@ -9,9 +9,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from results_table import load_results
+
 ROOT = Path(__file__).resolve().parents[1]
 rng = np.random.default_rng(2)
-d = pd.read_csv(ROOT / "data" / "output" / "metrics.csv")
+d = load_results()
 PI = ["pi1", "pi2", "pi3", "pi4"]
 L = {p: np.log10(d[p]).to_numpy() for p in PI}
 rk = lambda a: np.argsort(np.argsort(a))

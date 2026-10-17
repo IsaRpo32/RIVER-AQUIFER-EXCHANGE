@@ -21,9 +21,8 @@ import matplotlib.pyplot as plt
 import flopy
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from parallel_modflow import DATA_INPUT, DEFAULT_EXE, run_single_simulation
+from parallel_modflow import DEFAULT_EXE, load_inputs, run_single_simulation
 
-INPUT_CSV = DATA_INPUT / "inputs_main.csv"
 
 OUT_DIR = ROOT / "data" / "output" / "validation"
 RUNS = str(OUT_DIR / "runs")
@@ -54,7 +53,7 @@ def read_budget(scheme, sim_id):
 
 
 def run():
-    dt = pd.read_csv(INPUT_CSV).set_index("IDMERGE", drop=False)
+    dt = load_inputs("main").set_index("IDMERGE", drop=False)
     jobs = [(s, (i, dt.loc[i], BASE, f"{SUBDIR}/{s}", DEFAULT_EXE, {**COMMON, **cfg}))
             for s, cfg in SCHEMES.items() for i in IDS]
     results = []

@@ -13,9 +13,8 @@ sys.path.insert(0, str(ROOT / "simulations"))
 import pandas as pd
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from parallel_modflow import DATA_INPUT, DEFAULT_EXE, run_single_simulation
+from parallel_modflow import DEFAULT_EXE, load_inputs, run_single_simulation
 
-INPUT_CSV = DATA_INPUT / "inputs_n_original.csv"
 
 OUT = ROOT / "data" / "output" / "validation"
 RUNS = str(OUT / "runs")
@@ -29,7 +28,7 @@ SCHEMES = {
 }
 
 if __name__ == "__main__":
-    dt = pd.read_csv(INPUT_CSV).set_index("IDMERGE", drop=False)
+    dt = load_inputs("main", original_n=True).set_index("IDMERGE", drop=False)
     jobs = [(scheme, (i, dt.loc[i], RUNS, f"scheme_examples/{scheme}",
                       DEFAULT_EXE, cfg))
             for scheme, cfg in SCHEMES.items() for i in IDS]

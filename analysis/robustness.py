@@ -17,8 +17,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from results_table import load_results
+
 ROOT = Path(__file__).resolve().parents[1]
-D = pd.read_csv(ROOT / "data" / "output" / "metrics.csv")
+D = load_results()
 OUT = ROOT / "data" / "output" / "robustness"; OUT.mkdir(parents=True, exist_ok=True)
 PI = ["pi1", "pi2", "pi3", "pi4"]; PI3 = ["pi1", "pi2", "pi3"]
 MET = ["delta_tp*", "delta_H*", "t_r*", "delta_leakage*", "delta_storage*"]
